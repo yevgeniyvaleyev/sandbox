@@ -1,6 +1,6 @@
-angular.module('istackApp.services', ['ngResource'])
+angular.module('myApp.services', ['ngResource'])
 
-.factory('atomFieldWorker', ['$q', '$rootScope', function($q, $rootScope) {
+.factory('worker', ['$q', '$rootScope', function($q, $rootScope) {
 
     var worker = new Worker("/scripts/resolver.worker.js");
 
