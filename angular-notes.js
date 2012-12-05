@@ -1,4 +1,16 @@
 /*
+
+<div ng-repeat="atom in atoms" class='well' >
+    <table>
+        <tr ng-repeat="(key, value) in atom">
+            <td><strong>{{key}}</strong></td><td>:</td><td ng-bind-html="value"></td>
+        </tr>
+    </table>
+</div>
+
+*/
+
+/*
 * resolveService example
 */
 
