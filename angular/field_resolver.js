@@ -1,3 +1,5 @@
+// 0
+
 .factory('resolveService', ['$rootScope','$q', function($rootScope, $q) {
 
     var resolveObject = function(_targetObj, _schema, _resolveID) {
@@ -18,6 +20,8 @@
         onResolve: onResolve
     };
 }])
+
+// 1
 
 .factory('resolveService', ['$rootScope','$q', function($rootScope, $q) {
 
@@ -50,6 +54,37 @@
         resolve: function(_targetObj, _schema, _resolveID){
             var _result = resolveObject(_targetObj, _schema);
             $rootScope.$broadcast('resolver.success', _result, _resolveID);
+        },
+        onResolve: onResolve
+    };
+}])
+
+// 2
+
+.factory('resolveService', ['$rootScope', function($rootScope) {
+
+    var worker = new Worker("/scripts/resolver.worker.js");
+
+    worker.addEventListener("message", function(event) {
+        $rootScope.$apply(function() {
+            var _resObj = event.data.resolvedObj;
+            var _id = event.data.id;
+            $rootScope.$broadcast('resolver.success', _resObj, _id);
+        });
+    }, false);
+
+    var onResolve = function(callback) {
+        $rootScope.$on('resolver.success', callback);
+    };
+
+    return {
+        resolve: function(targetObj, schema, id) {
+            var _data = {
+                targetObj: targetObj,
+                schema: schema,
+                id: id
+            };
+            worker.postMessage(_data);
         },
         onResolve: onResolve
     };
