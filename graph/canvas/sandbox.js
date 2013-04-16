@@ -15,13 +15,42 @@ function addCanvas(id) {
   return canvas;
 }
 
+function Gradients() {
+  var ctx = addCanvas().getContext("2d");
+  // Create gradients
+  var lingrad = ctx.createLinearGradient(0, 0, 0, 150);
+  lingrad.addColorStop(0, '#00ABEB');
+  lingrad.addColorStop(0.5, '#fff');
+  lingrad.addColorStop(0.5, '#26C000');
+  lingrad.addColorStop(1, '#fff');
+
+  var lingrad2 = ctx.createLinearGradient(0, 50, 0, 95);
+  lingrad2.addColorStop(0.5, '#000');
+  lingrad2.addColorStop(1, 'rgba(0,0,0,0)');
+
+  // assign gradients to fill and stroke styles
+  ctx.fillStyle = lingrad;
+  ctx.strokeStyle = lingrad2;
+
+  // draw shapes
+  ctx.fillRect(10, 10, 130, 130);
+  ctx.strokeRect(50, 50, 50, 50);
+}
+to_load.push(Gradients)
+
 function Lines() {
   var ctx = addCanvas().getContext("2d");
-  for (var i = 0; i < 10; i++){
-    ctx.lineWidth = 1+i;
+  var lineJoin = ['round', 'bevel', 'miter'];
+  ctx.lineWidth = 10;
+  for (var i = 0; i < lineJoin.length; i++) {
+    ctx.lineCap = 'round'; //'butt','round','square'
+    ctx.lineJoin = lineJoin[i];
     ctx.beginPath();
-    ctx.moveTo(5+i*14,5);
-    ctx.lineTo(5+i*14,140);
+    ctx.moveTo(5, 5 + i * 40);
+    ctx.lineTo(40, 45 + i * 40);
+    ctx.lineTo(80, 5 + i * 40);
+    ctx.lineTo(120, 45 + i * 40);
+    ctx.lineTo(160, 5 + i * 40);
     ctx.stroke();
   }
 }
@@ -30,20 +59,20 @@ to_load.push(Lines)
 function Alpha() {
   var ctx = addCanvas().getContext("2d");
   ctx.fillStyle = '#FD0';
-  ctx.fillRect(0,0,75,75);
+  ctx.fillRect(0, 0, 75, 75);
   ctx.fillStyle = '#6C0';
-  ctx.fillRect(75,0,75,75);
+  ctx.fillRect(75, 0, 75, 75);
   ctx.fillStyle = '#09F';
-  ctx.fillRect(0,75,75,75);
+  ctx.fillRect(0, 75, 75, 75);
   ctx.fillStyle = '#F30';
-  ctx.fillRect(75,75,75,75);
+  ctx.fillRect(75, 75, 75, 75);
   ctx.fillStyle = '#FFF';
- 
+
   // set transparency value
   ctx.globalAlpha = 0.2;
- 
+
   // Draw semi transparent circles
-  for (i = 0; i < 7; i++){
+  for (i = 0; i < 7; i++) {
     ctx.beginPath();
     ctx.arc(75, 75, 10 + 10 * i, 0, Math.PI * 2, true);
     ctx.fill();
@@ -52,19 +81,19 @@ function Alpha() {
   ctx.globalAlpha = 1.0;
   // Draw background
   ctx.fillStyle = 'rgb(255,221,0)';
-  ctx.fillRect(151,0,300,37.5);
+  ctx.fillRect(151, 0, 300, 37.5);
   ctx.fillStyle = 'rgb(102,204,0)';
-  ctx.fillRect(151,37.5,300,37.5);
+  ctx.fillRect(151, 37.5, 300, 37.5);
   ctx.fillStyle = 'rgb(0,153,255)';
-  ctx.fillRect(151,75,300,37.5);
+  ctx.fillRect(151, 75, 300, 37.5);
   ctx.fillStyle = 'rgb(255,51,0)';
-  ctx.fillRect(151,112.5,300,37.5);
- 
+  ctx.fillRect(151, 112.5, 300, 37.5);
+
   // Draw semi transparent rectangles
-  for (var i=0;i<10;i++){
-    ctx.fillStyle = 'rgba(255,255,255,'+(i+1)/10+')';
-    for (var j=0;j<4;j++){
-      ctx.fillRect(156+i*14, 5+j*37.5, 14, 27.5)
+  for (var i = 0; i < 10; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (i + 1) / 10 + ')';
+    for (var j = 0; j < 4; j++) {
+      ctx.fillRect(156 + i * 14, 5 + j * 37.5, 14, 27.5)
     }
   }
 }
