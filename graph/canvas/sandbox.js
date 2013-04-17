@@ -16,6 +16,67 @@ function addCanvas(id) {
 }
 // ----------------------
 
+function Translate() {
+
+  function drawSpirograph(ctx, R, r, O) {
+    var x1 = R - O;
+    var y1 = 0;
+    var i = 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    do {
+      if (i > 20000) break;
+      var x2 = (R + r) * Math.cos(i * Math.PI / 72) - (r + O) * Math.cos(((R + r) / r) * (i * Math.PI / 72))
+      var y2 = (R + r) * Math.sin(i * Math.PI / 72) - (r + O) * Math.sin(((R + r) / r) * (i * Math.PI / 72))
+      ctx.lineTo(x2, y2);
+      x1 = x2;
+      y1 = y2;
+      i++;
+    } while (x2 != R - O && y2 != 0);
+    ctx.stroke();
+  }
+  var canvas = addCanvas('translate-test');
+  canvas.height = 300;
+  canvas.style.height = 300;
+  var ctx = canvas.getContext("2d");
+
+  ctx.fillRect(0, 0, 300, 300);
+  for (var i = 0; i < 3; i++) {
+    for (var j = 0; j < 3; j++) {
+      ctx.save();
+      var x = 50 + j * 100;
+      var y = 50 + i * 100;
+      ctx.strokeStyle = "rgb(" +  250 + ", " + x + ", " + y + ")" ;
+      ctx.translate(x, y);
+      var radius_1 = 20 * (j + 2) / (j + 1);
+      var radius_2 = -8 * (i + 3) / (i + 1);
+      drawSpirograph(ctx, radius_1, radius_2, 10);
+      ctx.restore();
+    }
+  }
+}
+to_load.push(Translate);
+
+function Save_and_Restore() {
+  var ctx = addCanvas('save-and-restore').getContext("2d");
+  ctx.fillRect(0, 0, 150, 150); // Draw a rectangle with default settings , black
+  ctx.save(); // Save the default state
+
+  ctx.fillStyle = '#09F' // Make changes to the settings
+  ctx.fillRect(15, 15, 120, 120); // Draw a rectangle with new settings
+
+  ctx.save(); // Save the current state
+  ctx.fillStyle = '#FFF' // Make changes to the settings
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(30, 30, 90, 90); // Draw a rectangle with new settings
+
+  ctx.restore(); // Restore previous state
+  ctx.fillRect(45, 45, 60, 60); // Draw a rectangle with restored settings
+
+  ctx.restore(); // Restore original state
+  ctx.fillRect(60, 60, 30, 30); // black
+}
+to_load.push(Save_and_Restore)
 
 function Gradients() {
   var ctx = addCanvas('gradients').getContext("2d");
@@ -97,7 +158,7 @@ function Lines() {
       ctx.shadowBlur = 10;
       ctx.shadowColor = "rgba(100, 0, 100, 0.9)";
       ctx.stroke();
-    }    
+    }
   }
 
   // Patterns
@@ -114,11 +175,14 @@ function Lines() {
     // TEXTS
 
     ctx.beginPath();
-    ctx.translate(250, 140);
-    ctx.rotate(- Math.PI / 2)
+    ctx.rotate(-Math.PI / 2)
+    ctx.shadowOffsetX = 3;
+    ctx.shadowOffsetY = 3;
+    ctx.shadowBlur = 5;
+    ctx.shadowColor = "rgba(50, 100, 500, 1)";
     ctx.font = "20px Times New Roman";
     ctx.fillStyle = "Blue";
-    ctx.fillText("Sample String", 5, 30);
+    ctx.fillText("Sample String", -135, 280);
     ctx.stroke();
   }
 
