@@ -14,9 +14,11 @@ function addCanvas(id) {
   document.body.appendChild(canvas);
   return canvas;
 }
+// ----------------------
+
 
 function Gradients() {
-  var ctx = addCanvas().getContext("2d");
+  var ctx = addCanvas('gradients').getContext("2d");
   // Create gradients
   var lingrad = ctx.createLinearGradient(0, 0, 150, 150);
   lingrad.addColorStop(0, 'red');
@@ -73,25 +75,58 @@ function Gradients() {
 to_load.push(Gradients)
 
 function Lines() {
-  var ctx = addCanvas().getContext("2d");
-  var lineJoin = ['round', 'bevel', 'miter'];
-  ctx.lineWidth = 10;
-  for (var i = 0; i < lineJoin.length; i++) {
-    ctx.lineCap = 'round'; //'butt','round','square'
-    ctx.lineJoin = lineJoin[i];
+  var ctx = addCanvas('lines-shadow-pattern-texts').getContext("2d");
+
+  function drawLines() {
+    var lineJoin = ['round', 'bevel', 'miter'];
+    var offset = 50;
+    ctx.lineWidth = 10;
+    for (var i = 0; i < lineJoin.length; i++) {
+      ctx.lineCap = 'round'; //'butt','round','square'
+      ctx.lineJoin = lineJoin[i];
+      ctx.beginPath();
+      ctx.moveTo(5 + offset, 15 + i * 40);
+      ctx.lineTo(40 + offset, 55 + i * 40);
+      ctx.lineTo(80 + offset, 15 + i * 40);
+      ctx.lineTo(120 + offset, 55 + i * 40);
+      ctx.lineTo(160 + offset, 15 + i * 40);
+
+      // SHADOW
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "rgba(100, 0, 100, 0.9)";
+      ctx.stroke();
+    }    
+  }
+
+  // Patterns
+
+  var img = new Image();
+  img.src = 'https://developer.mozilla.org/files/222/Canvas_createpattern.png';
+  img.onload = function() {
+    // create pattern
+    var ptrn = ctx.createPattern(img, 'repeat'); // repeat, repeat-x, repeat-y, no-repeat
+    ctx.fillStyle = ptrn;
+    ctx.fillRect(5, 5, 290, 140);
+    drawLines();
+
+    // TEXTS
+
     ctx.beginPath();
-    ctx.moveTo(5, 5 + i * 40);
-    ctx.lineTo(40, 45 + i * 40);
-    ctx.lineTo(80, 5 + i * 40);
-    ctx.lineTo(120, 45 + i * 40);
-    ctx.lineTo(160, 5 + i * 40);
+    ctx.translate(250, 140);
+    ctx.rotate(- Math.PI / 2)
+    ctx.font = "20px Times New Roman";
+    ctx.fillStyle = "Blue";
+    ctx.fillText("Sample String", 5, 30);
     ctx.stroke();
   }
+
 }
 to_load.push(Lines)
 
 function Alpha() {
-  var ctx = addCanvas().getContext("2d");
+  var ctx = addCanvas('test-alpha').getContext("2d");
   ctx.fillStyle = '#FD0';
   ctx.fillRect(0, 0, 75, 75);
   ctx.fillStyle = '#6C0';
@@ -134,7 +169,7 @@ function Alpha() {
 to_load.push(Alpha)
 
 function ColorsCircles() {
-  var ctx = addCanvas().getContext("2d");
+  var ctx = addCanvas('color-circles').getContext("2d");
   for (var i = 0; i < 6; i++) {
     for (var j = 0; j < 6; j++) {
       ctx.strokeStyle = 'rgb(0,' + Math.floor(255 - 42.5 * i) + ',' + Math.floor(255 - 42.5 * j) + ')';
@@ -149,7 +184,7 @@ function ColorsCircles() {
 to_load.push(ColorsCircles)
 
 function Squares() {
-  var canvas = addCanvas();
+  var canvas = addCanvas('squares');
   if (canvas.getContext) {
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "rgb(200,0,0)";
@@ -166,7 +201,7 @@ to_load.push(Squares)
 
 function Triangles() {
   // two triangles
-  var ctx = addCanvas().getContext('2d');
+  var ctx = addCanvas('triangles').getContext('2d');
   // Filled triangle
   ctx.beginPath();
   ctx.moveTo(25, 25);
@@ -185,7 +220,7 @@ function Triangles() {
 to_load.push(Triangles)
 
 function Circles() {
-  var ctx = addCanvas().getContext('2d');
+  var ctx = addCanvas('play-with-circles').getContext('2d');
   for (var i = 0; i < 3; i++) {
     for (var j = 0; j < 4; j++) {
       ctx.beginPath();
@@ -209,7 +244,7 @@ function Circles() {
 to_load.push(Circles)
 
 function Quadratic() {
-  var ctx = addCanvas().getContext('2d');
+  var ctx = addCanvas('curves').getContext('2d');
   ctx.beginPath();
   ctx.moveTo(75, 25);
   ctx.quadraticCurveTo(25, 25, 25, 62.5);
@@ -219,22 +254,19 @@ function Quadratic() {
   ctx.quadraticCurveTo(125, 100, 125, 62.5);
   ctx.quadraticCurveTo(125, 25, 75, 25);
   ctx.stroke();
-}
-to_load.push(Quadratic)
 
-function Bazier() {
-  var ctx = addCanvas().getContext('2d');
+  var offset = 150;
   ctx.beginPath();
-  ctx.moveTo(75, 40);
-  ctx.bezierCurveTo(75, 37, 70, 25, 50, 25);
-  ctx.bezierCurveTo(20, 25, 20, 62.5, 20, 62.5);
-  ctx.bezierCurveTo(20, 80, 40, 102, 75, 120);
-  ctx.bezierCurveTo(110, 102, 130, 80, 130, 62.5);
-  ctx.bezierCurveTo(130, 62.5, 130, 25, 100, 25);
-  ctx.bezierCurveTo(85, 25, 75, 37, 75, 40);
+  ctx.moveTo(75 + offset, 40);
+  ctx.bezierCurveTo(75 + offset, 37, 70 + offset, 25, 50 + offset, 25);
+  ctx.bezierCurveTo(20 + offset, 25, 20 + offset, 62.5, 20 + offset, 62.5);
+  ctx.bezierCurveTo(20 + offset, 80, 40 + offset, 102, 75 + offset, 120);
+  ctx.bezierCurveTo(110 + offset, 102, 130 + offset, 80, 130 + offset, 62.5);
+  ctx.bezierCurveTo(130 + offset, 62.5, 130 + offset, 25, 100 + offset, 25);
+  ctx.bezierCurveTo(85 + offset, 25, 75 + offset, 37, 75 + offset, 40);
   ctx.fill();
 }
-to_load.push(Bazier)
+to_load.push(Quadratic)
 
 function Pac() {
 
@@ -252,7 +284,7 @@ function Pac() {
     ctx.stroke();
   }
 
-  var ctx = addCanvas().getContext('2d');
+  var ctx = addCanvas('pac-man').getContext('2d');
   roundedRect(ctx, 12, 12, 150, 150, 15);
   roundedRect(ctx, 19, 19, 150, 150, 9);
   roundedRect(ctx, 53, 53, 49, 33, 10);
@@ -313,7 +345,7 @@ function Pac() {
 to_load.push(Pac)
 
 function ImageDraw() {
-  var ctx = addCanvas('imgID').getContext('2d');
+  var ctx = addCanvas('play-images').getContext('2d');
   var img = new Image();
 
   img.onload = function() {
@@ -332,7 +364,7 @@ function ImageDraw() {
 to_load.push(ImageDraw);
 
 function ImageDrawRhino() {
-  var ctx = addCanvas('imgID').getContext('2d');
+  var ctx = addCanvas('create-picture').getContext('2d');
   var img_1 = new Image();
   var img_2 = new Image();
 
