@@ -18,14 +18,14 @@ function addCanvas(id) {
 function Gradients() {
   var ctx = addCanvas().getContext("2d");
   // Create gradients
-  var lingrad = ctx.createLinearGradient(0, 0, 0, 150);
-  lingrad.addColorStop(0, '#00ABEB');
-  lingrad.addColorStop(0.5, '#fff');
-  lingrad.addColorStop(0.5, '#26C000');
+  var lingrad = ctx.createLinearGradient(0, 0, 150, 150);
+  lingrad.addColorStop(0, 'red');
+  lingrad.addColorStop(0.25, '#fff');
+  lingrad.addColorStop(0.75, '#26C000');
   lingrad.addColorStop(1, '#fff');
 
   var lingrad2 = ctx.createLinearGradient(0, 50, 0, 95);
-  lingrad2.addColorStop(0.5, '#000');
+  lingrad2.addColorStop(0.3, 'red');
   lingrad2.addColorStop(1, 'rgba(0,0,0,0)');
 
   // assign gradients to fill and stroke styles
@@ -35,6 +35,40 @@ function Gradients() {
   // draw shapes
   ctx.fillRect(10, 10, 130, 130);
   ctx.strokeRect(50, 50, 50, 50);
+
+  // RADIAL
+
+  var offset = 150;
+  // green
+  var radgrad = ctx.createRadialGradient(45 + offset, 45, 10, 35 + offset, 50, 40);
+  radgrad.addColorStop(0, '#A7D30C');
+  radgrad.addColorStop(0.9, '#019F62');
+  radgrad.addColorStop(1, 'rgba(0,0,0,0.1)');
+  // pink 
+  var radgrad2 = ctx.createRadialGradient(100 + offset, 105, 20, 112 + offset, 120, 50);
+  radgrad2.addColorStop(0, '#FF5F98');
+  radgrad2.addColorStop(0.75, '#FF0188');
+  radgrad2.addColorStop(1, 'rgba(255,1,136,0)');
+  // blue
+  var radgrad3 = ctx.createRadialGradient(95 + offset, 15, 15, 102 + offset, 20, 40);
+  radgrad3.addColorStop(0, '#00C9FF');
+  radgrad3.addColorStop(0.8, '#00B5E2');
+  radgrad3.addColorStop(1, 'rgba(0,201,255,0)');
+  // yellow
+  var radgrad4 = ctx.createRadialGradient(0 + offset, 150, 50, 0 + offset, 140, 90);
+  radgrad4.addColorStop(0, '#F4F201');
+  radgrad4.addColorStop(0.8, '#E4C700');
+  radgrad4.addColorStop(1, 'rgba(228,199,0,0.2)');
+
+  // draw shapes
+  ctx.fillStyle = radgrad4;
+  ctx.fillRect(0 + offset, 0, 150 + offset, 150);
+  ctx.fillStyle = radgrad3;
+  ctx.fillRect(0 + offset, 0, 150 + offset, 150);
+  ctx.fillStyle = radgrad2;
+  ctx.fillRect(0 + offset, 0, 150 + offset, 150);
+  ctx.fillStyle = radgrad;
+  ctx.fillRect(0 + offset, 0, 150 + offset, 150);
 }
 to_load.push(Gradients)
 
