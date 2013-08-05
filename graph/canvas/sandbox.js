@@ -60,9 +60,10 @@ to_load.push(Translate);
 function Save_and_Restore() {
   var ctx = addCanvas('save-and-restore').getContext("2d");
   ctx.fillRect(0, 0, 150, 150); // Draw a rectangle with default settings , black
+  // black
   ctx.save(); // Save the default state
 
-  ctx.fillStyle = '#09F' // Make changes to the settings
+  ctx.fillStyle = 'green' // Make changes to the settings
   ctx.fillRect(15, 15, 120, 120); // Draw a rectangle with new settings
 
   ctx.save(); // Save the current state
@@ -73,7 +74,7 @@ function Save_and_Restore() {
   ctx.restore(); // Restore previous state
   ctx.fillRect(45, 45, 60, 60); // Draw a rectangle with restored settings
 
-  ctx.restore(); // Restore original state
+  ctx.restore(); // Restore very first state
   ctx.fillRect(60, 60, 30, 30); // black
 }
 to_load.push(Save_and_Restore)
@@ -84,12 +85,12 @@ function Gradients() {
   var lingrad = ctx.createLinearGradient(0, 0, 150, 150);
   lingrad.addColorStop(0, 'red');
   lingrad.addColorStop(0.25, '#fff');
-  lingrad.addColorStop(0.75, '#26C000');
+  lingrad.addColorStop(0.75, 'green');
   lingrad.addColorStop(1, '#fff');
 
   var lingrad2 = ctx.createLinearGradient(0, 50, 0, 95);
-  lingrad2.addColorStop(0.3, 'red');
-  lingrad2.addColorStop(1, 'rgba(0,0,0,0)');
+  lingrad2.addColorStop(0.3, 'blue');
+  lingrad2.addColorStop(1, 'rgba(0,0,0,0)');// transparent
 
   // assign gradients to fill and stroke styles
   ctx.fillStyle = lingrad;
@@ -106,7 +107,7 @@ function Gradients() {
   var radgrad = ctx.createRadialGradient(45 + offset, 45, 10, 35 + offset, 50, 40);
   radgrad.addColorStop(0, '#A7D30C');
   radgrad.addColorStop(0.9, '#019F62');
-  radgrad.addColorStop(1, 'rgba(0,0,0,0.1)');
+  radgrad.addColorStop(1, 'rgba(0,0,0,0)');//transpagent
   // pink 
   var radgrad2 = ctx.createRadialGradient(100 + offset, 105, 20, 112 + offset, 120, 50);
   radgrad2.addColorStop(0, '#FF5F98');
@@ -121,16 +122,16 @@ function Gradients() {
   var radgrad4 = ctx.createRadialGradient(0 + offset, 150, 50, 0 + offset, 140, 90);
   radgrad4.addColorStop(0, '#F4F201');
   radgrad4.addColorStop(0.8, '#E4C700');
-  radgrad4.addColorStop(1, 'rgba(228,199,0,0.2)');
+  radgrad4.addColorStop(1, 'rgba(228,199,0,0.2)');// yellow background
 
   // draw shapes
-  ctx.fillStyle = radgrad4;
+  ctx.fillStyle = radgrad4;// yellow
   ctx.fillRect(0 + offset, 0, 150 + offset, 150);
-  ctx.fillStyle = radgrad3;
+  ctx.fillStyle = radgrad3;// blue
   ctx.fillRect(0 + offset, 0, 150 + offset, 150);
-  ctx.fillStyle = radgrad2;
+  ctx.fillStyle = radgrad2;// pink
   ctx.fillRect(0 + offset, 0, 150 + offset, 150);
-  ctx.fillStyle = radgrad;
+  ctx.fillStyle = radgrad; // green
   ctx.fillRect(0 + offset, 0, 150 + offset, 150);
 }
 to_load.push(Gradients)
@@ -140,11 +141,13 @@ function Lines() {
 
   function drawLines() {
     var lineJoin = ['round', 'bevel', 'miter'];
+    var colors = ['red', 'blue', 'green'];
     var offset = 50;
     ctx.lineWidth = 10;
     for (var i = 0; i < lineJoin.length; i++) {
       ctx.lineCap = 'round'; //'butt','round','square'
       ctx.lineJoin = lineJoin[i];
+      ctx.strokeStyle = colors[i];
       ctx.beginPath();
       ctx.moveTo(5 + offset, 15 + i * 40);
       ctx.lineTo(40 + offset, 55 + i * 40);
@@ -191,6 +194,7 @@ to_load.push(Lines)
 
 function Alpha() {
   var ctx = addCanvas('test-alpha').getContext("2d");
+  // left side squares
   ctx.fillStyle = '#FD0';
   ctx.fillRect(0, 0, 75, 75);
   ctx.fillStyle = '#6C0';
@@ -213,6 +217,7 @@ function Alpha() {
 
   ctx.globalAlpha = 1.0;
   // Draw background
+  // right side squares
   ctx.fillStyle = 'rgb(255,221,0)';
   ctx.fillRect(151, 0, 300, 37.5);
   ctx.fillStyle = 'rgb(102,204,0)';
@@ -224,7 +229,7 @@ function Alpha() {
 
   // Draw semi transparent rectangles
   for (var i = 0; i < 10; i++) {
-    ctx.fillStyle = 'rgba(255,255,255,' + (i + 1) / 10 + ')';
+    ctx.fillStyle = 'rgba(255,255,255,' + (i + 1) / 10 + ')';// white + alpha
     for (var j = 0; j < 4; j++) {
       ctx.fillRect(156 + i * 14, 5 + j * 37.5, 14, 27.5)
     }
