@@ -2,18 +2,22 @@ body {
     padding: 0;
     margin: 0;
     background-color: #000;
+    text-align: center;
 }
 #gol #board {
-    width: 100%;
+    min-height: 99%;
+    width: 99%;
+    margin-top: 2px;
+    border: 1px solid #666;
 }
 #gol form {
-    background-color: #fff;
+    background-color: #666;
     position: absolute;
-    bottom: 0;
+    bottom: 2px;
     display: none;
-    right: 0;
+    right: 2px;
     padding: 0px;
 }
-#gol:hover form {
+body:hover #gol form {
     display: block;
 }

@@ -7,52 +7,12 @@ var gol = function() {
     var paused  = true,
         game_id = '#gol',
         url     = 'config.json',
-        delay   = 1000,
-        cell_size = 3,
+        delay   = 0,
+        cell_size = 4,
         canvas = document.getElementById('board'),
         ctx = canvas.getContext('2d'),
-        generate_limits = {x: 500, y: 200},
         worker_src = 'js/gol.worker.js',
         worker = null;
-
-    /**
-     * Loads data config from the server and validates.
-     * Works with the same domain or allowed
-     * @param function fn, callback
-     * @access private
-     * @return null
-     */
-    var loadData = function (fn) {
-        $.ajax(url)
-            .done(function(v){
-                try {
-                    var _valid = true;
-                    var _data = (typeof v == 'object') ? v : JSON.parse(v);
-                    var _rowLen = _data[0].length;
-                    var reg = new RegExp('^(1|0){' + _rowLen + '}$','i');
-
-                    for (var i = 0; i < _data.length; i++) {
-                        var _tmpStr = _data[i];
-                        if (typeof _tmpStr == 'string' && reg.test(_tmpStr)) {
-                            map[i] = $.map(_tmpStr.split(''), Number);
-                        } else {
-                            _valid = false;
-                            map = [];
-                            console.warn('Invalid row (#' + i + ', "' + _tmpStr + '")! Fix and reload');
-                            break;
-                        }
-                    }
-                    if(fn && _valid) {
-                        fn();
-                    }
-                } catch (e) {
-                    console.warn('Parse config problem. Ckeck the config and reload.', e);
-                }
-            })
-            .fail(function(){
-                console.log('Fail to load config');
-            })
-    }
 
     /**
      * Inits the game.
@@ -60,6 +20,9 @@ var gol = function() {
      * @return null
      */
     this.init = function() {
+        $(window).resize(function () {
+            initBoard(run);
+        })
         initBoard();
         initActions();
     }
@@ -114,14 +77,6 @@ var gol = function() {
         var width = row_length * cell_size,
             height = map_length * cell_size;
 
-//        canvas.style.width = width;
-//        canvas.style.height = window.innerHeight;
-
-        $(canvas).css({
-            height: window.innerHeight - 4 + 'px'
-        })
-        console.log('UJEEN --->  --->  ', window.innerHeight);
-
         canvas.width = width;
         canvas.height = height;
     }
@@ -138,8 +93,8 @@ var gol = function() {
 
         for (var y = 0; y < life_collection.length; y++) {
             var _tmpRowLength = life_collection[y].length;
-            for (var x = 0; x < _tmpRowLength; x++) {
-                if (!!life_collection[y][x]) {
+            for (var i = 0; i < _tmpRowLength; i++) {
+                    var x = life_collection[y][i];
                     ctx.save();
                     ctx.beginPath();
                     var x0 = x * cell_size + cell_size/2,
@@ -154,7 +109,6 @@ var gol = function() {
                     ctx.rect(x * cell_size, y * cell_size, cell_size, cell_size);
                     ctx.fill();
                     ctx.restore();
-                }
             }
         }
     }
@@ -187,17 +141,18 @@ var gol = function() {
      * @access private
      * @return null
      */
-    var initBoard = function() {
+    var initBoard = function(callback) {
         var params = {
-            x: generate_limits.x,
-            y: generate_limits.y
+            x: parseInt(window.innerWidth/cell_size),
+            y: parseInt(window.innerHeight/cell_size)
         }
         generateData('initial', params, function (data) {
-            initShape(data[0].length, data.length);
-            drawLife(data);
+            initShape(data.cols, data.rows);
+            drawLife(data.map);
+            if (callback) {
+                callback();
+            }
         })
-//        loadData(function() {
-//        })
     }
 
     /**
@@ -218,15 +173,16 @@ var gol = function() {
      * @return null
      */
     var run = function(event) {
+        var self = this;
         if (event) {
             paused = !paused;
         }
         generation(function(){
             if (!paused) {
-                $(this).val('stop');
+                $(self).val('stop');
                 setTimeout(run, delay);
             } else {
-                $(this).val('run');
+                $(self).val('run');
             }
         });
     };

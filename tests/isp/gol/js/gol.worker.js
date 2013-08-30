@@ -4,8 +4,8 @@
  */
 
 var neighbourOffset = [
-    [-1, -1],[0 , -1],[1 , -1],[-1,  0],
-    [1 ,  0],[-1,  1],[0 ,  1],[1 ,  1]
+        [-1, -1],[0 , -1],[1 , -1],[-1,  0],
+        [1 ,  0],[-1,  1],[0 ,  1],[1 ,  1]
     ],
     map = [];
 
@@ -19,19 +19,27 @@ function initialData(data) {
         y_limit =  data.y,
         number = 0,
         tmp_map = [],
-        tmp_map_row = [];
+        life_map = [];
 
     for (var y = 0; y < y_limit; y++) {
-        tmp_map_row = [];
+        tmp_map[y] = [];
+        life_map[y] = [];
         for (var x = 0; x < x_limit; x++) {
             var division = Math.floor(Math.random() * 20);
             number = (x%division == 0) ? Math.floor(Math.random() * 2) : 0;
-            tmp_map_row.push(number);
+            tmp_map[y].push(number);
+            if (number) {
+                life_map[y].push(x);
+            }
         }
-        tmp_map.push(tmp_map_row);
     }
     map = tmp_map;
-    return tmp_map;
+
+    return {
+        map: life_map,
+        rows: map.length,
+        cols: map[0].length
+    };
 };
 
 /**
@@ -59,7 +67,8 @@ var isAlive = function (map, x, y) {
  * @returns {*}
  */
 function generationData() {
-    var tempMap = JSON.parse(JSON.stringify(map));
+    var tempMap = JSON.parse(JSON.stringify(map)),
+        life_map = [];
 
     for (var y = 0; y < map.length; y++) {
         for (var x = 0; x < map[y].length; x++) {
@@ -81,13 +90,17 @@ function generationData() {
         }
     }
     for (var y2 = 0; y2 < map.length; y2++) {
+        life_map[y2] = [];
         for (var x2 = 0; x2 < map[y2].length; x2++) {
             if (map[y2][x2] != tempMap[y2][x2]) {
                 map[y2][x2] = tempMap[y2][x2];
             }
+            if (map[y2][x2]) {
+                life_map[y2].push(x2)
+            }
         }
     }
-    return map;
+    return life_map;
 }
 
 onmessage = function(event) {
