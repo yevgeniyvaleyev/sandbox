@@ -95,9 +95,10 @@ var gol = function() {
             var _tmpRowLength = life_collection[y].length;
             for (var i = 0; i < _tmpRowLength; i++) {
                     var x = life_collection[y][i].x_position,
-                        old_life_color = '#eaa825',
-                        new_life_color = '#5cd14f',
-                        life_color = !!life_collection[y][i].is_old ? old_life_color : new_life_color;
+                        age = life_collection[y][i].age,
+                        color = (age <= 250) ? age : 250,
+                        life_color = 'rgba(0,' + 250 + ',0,0.9)';
+
                     ctx.save();
                     ctx.beginPath();
                     var x0 = x * cell_size + cell_size/2,
