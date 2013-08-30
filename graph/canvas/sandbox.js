@@ -127,12 +127,12 @@ function Gradients() {
     // draw shapes
     ctx.fillStyle = radgrad4;// yellow
     ctx.fillRect(0 + offset, 0, 150 + offset, 150);
-    ctx.fillStyle = radgrad3;// blue
-    ctx.fillRect(0 + offset, 0, 150 + offset, 150);
-    ctx.fillStyle = radgrad2;// pink
-    ctx.fillRect(0 + offset, 0, 150 + offset, 150);
-    ctx.fillStyle = radgrad; // green
-    ctx.fillRect(0 + offset, 0, 150 + offset, 150);
+    // ctx.fillStyle = radgrad3;// blue
+    // ctx.fillRect(0 + offset, 0, 150 + offset, 150);
+    // ctx.fillStyle = radgrad2;// pink
+    // ctx.fillRect(0 + offset, 0, 150 + offset, 150);
+    // ctx.fillStyle = radgrad; // green
+    // ctx.fillRect(0 + offset, 0, 150 + offset, 150);
 }
 to_load.push(Gradients)
 

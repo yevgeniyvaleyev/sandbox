@@ -2,21 +2,19 @@
  * Conway's Game of Life, Javascript implementation
  * @author Yevgeniy Valeyev
  */
+
 var gol = function() {
-    
-    var paused  = true;
-    var game_id = '#gol';  
-    var url     = 'config.json';
-    var delay   = 1000;
-    
-    var neighbourOffset = [
-        [-1, -1],[0 , -1],[1 , -1],[-1,  0],
-        [1 ,  0],[-1,  1],[0 ,  1],[1 ,  1]
-    ];
-    
-    var map     = new Array();    
-    var tempMap = new Array();    
-        
+    var paused  = true,
+        game_id = '#gol',
+        url     = 'config.json',
+        delay   = 1000,
+        cell_size = 3,
+        canvas = document.getElementById('board'),
+        ctx = canvas.getContext('2d'),
+        generate_limits = {x: 500, y: 200},
+        worker_src = 'js/gol.worker.js',
+        worker = null;
+
     /**
      * Loads data config from the server and validates.
      * Works with the same domain or allowed
@@ -26,46 +24,46 @@ var gol = function() {
      */
     var loadData = function (fn) {
         $.ajax(url)
-        .done(function(v){
-            try {
-                var _valid = true;
-                var _data = JSON.parse(v);
-                var _rowLen = _data[0].length;
-                var reg = new RegExp('^(1|0){' + _rowLen + '}$','i');
-                
-                for (var i = 0; i < _data.length; i++) {
-                    var _tmpStr = _data[i];                    
-                    if (typeof _tmpStr == 'string' && reg.test(_tmpStr)) {
-                        map[i] = $.map(_tmpStr.split(''), Number);
-                    } else {
-                        _valid = false;
-                        map = [];
-                        console.warn('Invalid row (#' + i + ', "' + _tmpStr + '")! Fix and reload');
-                        break;
+            .done(function(v){
+                try {
+                    var _valid = true;
+                    var _data = (typeof v == 'object') ? v : JSON.parse(v);
+                    var _rowLen = _data[0].length;
+                    var reg = new RegExp('^(1|0){' + _rowLen + '}$','i');
+
+                    for (var i = 0; i < _data.length; i++) {
+                        var _tmpStr = _data[i];
+                        if (typeof _tmpStr == 'string' && reg.test(_tmpStr)) {
+                            map[i] = $.map(_tmpStr.split(''), Number);
+                        } else {
+                            _valid = false;
+                            map = [];
+                            console.warn('Invalid row (#' + i + ', "' + _tmpStr + '")! Fix and reload');
+                            break;
+                        }
                     }
-                }    
-                if(fn && _valid) {
-                    fn();
+                    if(fn && _valid) {
+                        fn();
+                    }
+                } catch (e) {
+                    console.warn('Parse config problem. Ckeck the config and reload.', e);
                 }
-            } catch (e) {
-                console.warn('Parse config problem. Ckeck the config and reload.', e);
-            }            
-        })
-        .fail(function(){
-            console.log('Fail to load config');
-        })
+            })
+            .fail(function(){
+                console.log('Fail to load config');
+            })
     }
-    
+
     /**
      * Inits the game.
      * @access public
      * @return null
-     */      
+     */
     this.init = function() {
-        initBoard(); 
-        initActions();          
+        initBoard();
+        initActions();
     }
-    
+
     /**
      * Triggers a cell.
      * @param object event, element event
@@ -78,10 +76,10 @@ var gol = function() {
         var _y  = pos[0];
         if (!isNaN(_x) && !isNaN(_y)) {
             $(event.target).toggleClass('alive').addClass('visited');
-            map[_y][_x] = !!map[_y][_x] ? 0 : 1;    
-        } 
+            map[_y][_x] = !!map[_y][_x] ? 0 : 1;
+        }
     }
-    
+
     /**
      * Inits delay control.
      * @access private
@@ -89,14 +87,14 @@ var gol = function() {
      */
     var initDelayControl = function () {
         for (var d = 0; d <= 1000; d += 100) {
-            var sel = (delay == d) ? 'selected="selected"' : '';            
+            var sel = (delay == d) ? 'selected="selected"' : '';
             $('#delay', game_id).append('<option value="' + d + '" ' + sel + '>' + d + '</option>');
-        }        
+        };
         $('#delay', game_id).bind('change', function(){
             delay = $(this).val();
         });
-    }
-    
+    };
+
     /**
      * Inits events.
      * @access private
@@ -107,103 +105,113 @@ var gol = function() {
         $('.reload', game_id).bind('click', initBoard);
         $('.board', game_id).delegate('div','click', triggerCell);
         initDelayControl();
-    }
-     
+    };
+
     /**
-     * Checks whether a target cell alive.
-     * @access private
-     * @return boolean
+     * Inits shape
      */
-    var isAlive = function (x, y) {
-        if (y == map.length) {
-            y = 0;
-        } else if (y == -1) {
-            y = map.length - 1;
-        }
-        if (x == map[y].length) {
-            x = 0;
-        } else if (x == -1) {
-            x = map[y].length - 1;
-        }
-        return !!map[y][x];
+    var initShape = function (row_length, map_length) {
+        var width = row_length * cell_size,
+            height = map_length * cell_size;
+
+//        canvas.style.width = width;
+//        canvas.style.height = window.innerHeight;
+
+        $(canvas).css({
+            height: window.innerHeight - 4 + 'px'
+        })
+        console.log('UJEEN --->  --->  ', window.innerHeight);
+
+        canvas.width = width;
+        canvas.height = height;
     }
-          
+
+    /**
+     * Draws life
+     * @param map
+     */
+    var drawLife = function (life_collection) {
+
+        ctx.beginPath();
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (var y = 0; y < life_collection.length; y++) {
+            var _tmpRowLength = life_collection[y].length;
+            for (var x = 0; x < _tmpRowLength; x++) {
+                if (!!life_collection[y][x]) {
+                    ctx.save();
+                    ctx.beginPath();
+                    var x0 = x * cell_size + cell_size/2,
+                        y0 = y * cell_size + cell_size/2,
+                        gradient = ctx.createRadialGradient(x0, y0, cell_size/4, x0, y0, cell_size/2);
+
+                    gradient.addColorStop(0, '#5cd14f');
+                    gradient.addColorStop(1, '#000');
+                    gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+                    ctx.fillStyle = gradient;
+                    ctx.rect(x * cell_size, y * cell_size, cell_size, cell_size);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates
+     * @param callback
+     */
+    var generateData = function (type, data, callback) {
+        if (!!window.Worker) {
+            if (!worker) {
+                worker = new Worker(worker_src);
+            }
+            worker.postMessage({
+                type: type,
+                data: data
+            });
+            worker.onmessage = function (event) {
+                if (event.data.type == type) {
+                    callback(event.data.data);
+                }
+            };
+        } else {
+            console.log('Your browser does not support Web Workers!');
+        }
+    }
+
     /**
      * Inits a board of the game.
      * @access private
      * @return null
-     */          
+     */
     var initBoard = function() {
-        loadData(function() {            
-            var board = $('.board', game_id).empty();
-            var _firstRowLength = map[0].length;
-            
-            for (var y = 0; y < map.length; y++) {
-                var _tmpRowLength = map[y].length;
-                for (var x = 0; x < _tmpRowLength; x++) {
-                    var _cell = $('<div>');
-                    _cell.data('pos', y + '-' + x);
-                    if (!!map[y][x]) {
-                        _cell.addClass('alive');
-                    }
-                    board.append(_cell);
-                }
-            }
-            // Calculates width of board, because the size depends on config
-            board.css('width', $('div', board).outerWidth() * _firstRowLength);
+        var params = {
+            x: generate_limits.x,
+            y: generate_limits.y
+        }
+        generateData('initial', params, function (data) {
+            initShape(data[0].length, data.length);
+            drawLife(data);
         })
+//        loadData(function() {
+//        })
     }
-           
+
     /**
      * Generates a new genegation
      * @access private
      * @return null
      */
-    var generation = function () {   
-        
-        $.extend(true, tempMap, map);   
-        
-        for (var y = 0; y < map.length; y++) {
-            for (var x = 0; x < map[y].length; x++) {
-                var neighbours = 0;     
-                
-                for (var c = 0; c < neighbourOffset.length; c++) {
-                    var _x = neighbourOffset[c][0];
-                    var _y = neighbourOffset[c][1];
-                    if (isAlive(x + _x, y + _y)) {
-                        neighbours++;
-                    }
-                }
-                if (neighbours >= 4 || neighbours == 1 || neighbours == 0) {
-                    tempMap[y][x] = 0;
-                }
-                if (neighbours == 3) {
-                    tempMap[y][x] = 1;
-                }
-            }
-        }                        
-        applyGeneration();
-    }
-    
-    /**
-     * Applies a new generation.
-     * @access private
-     * @return null
-     */
-    var applyGeneration = function () {
-        for (var y2 = 0; y2 < map.length; y2++) {                            
-            for (var x2 = 0; x2 < map[y2].length; x2++) {
-                if (map[y2][x2] != tempMap[y2][x2]) {
-                    map[y2][x2] = tempMap[y2][x2];
-                    var _cellPos = parseInt(''+y2+x2, 10);
-                    $('.board div', game_id)
-                    .eq(_cellPos)
-                    .attr('class', !!map[y2][x2] ? 'alive' : 'visited')
-                }
-            }
-        }
-    }
-    
+    var generation = function (callback) {
+        generateData('generation', {}, function(data) {
+            drawLife(data);
+            callback();
+        })
+    };
+
     /**
      * Runs or pauses the game.
      * @access private
@@ -213,21 +221,22 @@ var gol = function() {
         if (event) {
             paused = !paused;
         }
-        if (!paused) {
-            $(this).val('stop');
-            setTimeout(run, delay);
-        } else {
-            $(this).val('run');
-        }
-        generation();
-    }
-                    
+        generation(function(){
+            if (!paused) {
+                $(this).val('stop');
+                setTimeout(run, delay);
+            } else {
+                $(this).val('run');
+            }
+        });
+    };
+
     return {
         init : this.init
-    }
-}
-        
+    };
+};
+
 // Inits the game on load        
 $(function() {
     gol().init();
-})
+});

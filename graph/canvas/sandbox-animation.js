@@ -16,119 +16,201 @@ function addCanvas(id) {
 }
 // ----------------------
 
-function clock() {
-    var context = addCanvas('clipping-test').getContext('2d');
-    function init(){
-        clock1();
-        setInterval(clock1,1000);
-    }
-    function clock1(){
-        var now = new Date();
-        var ctx = context;
-        var hours_sector_radian = Math.PI / 36;
-        ctx.save();
-        ctx.clearRect(0,0,150,150);
-        ctx.translate(75,75);
-        ctx.scale(0.4,0.4);
-        ctx.rotate(-Math.PI/2);
-        ctx.strokeStyle = "black";
-        ctx.fillStyle = "white";
-        ctx.lineWidth = 8;
-        ctx.lineCap = "round";
+function panorama() {
+    var img = new Image();
 
-        // Hour marks
-        ctx.save();
-        ctx.fillStyle = 'blue';        
-        for (var i=0;i<12;i++){
-            ctx.beginPath();
-            ctx.rotate(Math.PI/6);
-            // ctx.moveTo(100,0); 
-            // ctx.lineTo(120,0);
-            // ctx.stroke();
+// User Variables - customize these to change the image being scrolled, its
+// direction, and the speed.
 
-            ctx.save();
-            
-            ctx.arc(50, 0, 70, 0, hours_sector_radian, false);
-            ctx.lineTo(0, 0);
-            ctx.rotate(-hours_sector_radian);
-            ctx.fill();
-            ctx.restore();
-        }
-        ctx.restore();
+img.src = 'https://developer.mozilla.org/files/4553/Capitan_Meadows,_Yosemite_National_Park.jpg';
+var CanvasXSize = 800;
+var CanvasYSize = 200;
+var speed = 30; //lower is faster
+var scale = 1.05;
+var y = -4.5; //vertical offset
 
-        // Minute marks
-        ctx.save();
-        ctx.lineWidth = 5;
-        for (i=0;i<60;i++){
-            if (i%5!=0) {
-                ctx.beginPath();
-                ctx.moveTo(117,0);
-                ctx.lineTo(120,0);
-                ctx.stroke();
-            }
-            ctx.rotate(Math.PI/30);
-        }
-        ctx.restore();
+// Main program
 
-        var sec = now.getSeconds();
-        var min = now.getMinutes();
-        var hr  = now.getHours();
-        hr = hr>=12 ? hr-12 : hr;
+var dx = 0.75;
+var imgW;
+var imgH;
+var x = 0;
+var clearX;
+var clearY;
+var canvas = addCanvas('panorama-test');
 
-        ctx.fillStyle = "black";
+canvas.height = CanvasYSize;
+canvas.style.height = CanvasYSize;
+canvas.width = CanvasXSize;
+canvas.style.width = CanvasXSize;
 
-        // write Hours
-        ctx.save();
-        ctx.rotate( hr*(Math.PI/6) + (Math.PI/360)*min + (Math.PI/21600)*sec )
-        ctx.lineWidth = 14;
-        ctx.beginPath();
-        ctx.moveTo(-20,0);
-        ctx.lineTo(80,0);
-        ctx.stroke();
-        ctx.restore();
+var ctx = canvas.getContext('2d');
 
-        // write Minutes
-        ctx.save();
-        ctx.rotate( (Math.PI/30)*min + (Math.PI/1800)*sec )
-        ctx.lineWidth = 10;
-        ctx.beginPath();
-        ctx.moveTo(-28,0);
-        ctx.lineTo(112,0);
-        ctx.stroke();
-        ctx.restore();
-
-        // Write seconds
-        ctx.save();
-        ctx.rotate(sec * Math.PI/30);
-        ctx.strokeStyle = "#D40000";
-        ctx.fillStyle = "#D40000";
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.moveTo(-30,0);
-        ctx.lineTo(83,0);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(0,0,10,0,Math.PI*2,true);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(95,0,10,0,Math.PI*2,true);
-        ctx.stroke();
-        ctx.fillStyle = "rgba(0,0,0,0)";
-        ctx.arc(0,0,3,0,Math.PI*2,true);
-        ctx.fill();
-        ctx.restore();
-
-        ctx.beginPath();
-        ctx.lineWidth = 14;
-        ctx.strokeStyle = '#325FA2';
-        ctx.arc(0,0,142,0,Math.PI*2,true);
-        ctx.stroke();
-
-        ctx.restore();
-    }
-    init();
+img.onload = function() {
+    imgW = img.width*scale;
+    imgH = img.height*scale;
+    if (imgW > CanvasXSize) { x = CanvasXSize-imgW; } // image larger than canvas
+    if (imgW > CanvasXSize) { clearX = imgW; } // image larger than canvas
+    else { clearX = CanvasXSize; }
+    if (imgH > CanvasYSize) { clearY = imgH; } // image larger than canvas
+    else { clearY = CanvasYSize; }
+    //Get Canvas Element
+    //Set Refresh Rate
+    return setInterval(draw, speed);
 }
-to_load.push(clock);
+
+function draw() {
+    //Clear Canvas
+    ctx.clearRect(0,0,clearX,clearY);
+    //If image is <= Canvas Size
+    if (imgW <= CanvasXSize) {
+        //reset, start from beginning
+        if (x > (CanvasXSize)) { x = 0; }
+        //draw aditional image
+        if (x > (CanvasXSize-imgW)) { ctx.drawImage(img,x-CanvasXSize+1,y,imgW,imgH); }
+    }
+    //If image is > Canvas Size
+    else {
+        //reset, start from beginning
+        if (x > (CanvasXSize)) { x = CanvasXSize-imgW; }
+        //draw aditional image
+        if (x > (CanvasXSize-imgW)) { ctx.drawImage(img,x-imgW+1,y,imgW,imgH); }
+    }
+    //draw image
+    ctx.drawImage(img,x,y,imgW,imgH);
+    //amount to move
+    x += dx;
+}
+}
+to_load.push(panorama);
+
+// function clock() {
+//     var context = addCanvas('clipping-test').getContext('2d');
+//     function init(){
+//         clock1();
+//         setInterval(clock1,1000);
+//     }
+//     function clock1(){
+//         var now = new Date(),
+//             ctx = context,
+//             hours_offset_x = 100,
+//             hours_offset_y = 5;
+
+//         ctx.save();
+//         ctx.clearRect(0,0,150,150);
+//         ctx.translate(75,75);
+//         ctx.scale(0.4,0.4);
+//         ctx.rotate(-Math.PI/2);
+//         ctx.strokeStyle = "black";
+//         ctx.fillStyle = "white";
+//         ctx.lineWidth = 8;
+//         ctx.lineCap = "round";
+
+//         // Hour marks
+//         ctx.save();
+//         ctx.fillStyle = 'blue';        
+//         for (var i=0;i<12;i++){
+//             ctx.beginPath();
+//             ctx.rotate(Math.PI/6);
+//             ctx.moveTo(hours_offset_x,0); 
+//             // ctx.lineTo(120,0);
+//             // ctx.stroke();
+
+//             ctx.save();
+            
+//             ctx.lineTo(hours_offset_x + 20, - hours_offset_y);
+//             ctx.lineTo(hours_offset_x + 20, hours_offset_y);
+//             ctx.lineTo(hours_offset_x, 0);
+//             ctx.arc(hours_offset_x - 5, 0, 5, 0, Math.PI * 2, false);
+//             ctx.fill();
+//             ctx.restore();
+//         }
+//         ctx.restore();
+
+//         // Minute marks
+//         ctx.save();
+//         ctx.lineWidth = 5;
+//         for (i = 0; i < 60; i++) {
+//             if (i%5 != 0) { // draw a mark if not a hour mark
+//                 ctx.beginPath();
+//                 ctx.moveTo(117,0);
+//                 ctx.lineTo(120,0);
+//                 ctx.stroke();
+//             }
+//             ctx.rotate(Math.PI/30);
+//         }
+//         ctx.restore();
+
+//         var sec = now.getSeconds();
+//         var min = now.getMinutes();
+//         var hr  = now.getHours();
+//         hr = hr>=12 ? hr-12 : hr;
+
+//         ctx.fillStyle = "black";
+
+//         // write Hours
+//         ctx.save();
+//         ctx.rotate( hr*(Math.PI/6) + (Math.PI/360)*min + (Math.PI/21600)*sec )
+//         ctx.lineWidth = 14;
+//         ctx.beginPath();
+//         ctx.moveTo(-20,0);
+//         ctx.lineTo(80,0);
+//         ctx.stroke();
+//         ctx.restore();
+
+//         // write Minutes
+//         ctx.save();
+//         ctx.rotate( (Math.PI/30)*min + (Math.PI/1800)*sec )
+//         ctx.lineWidth = 10;
+//         ctx.beginPath();
+//         ctx.moveTo(-28,0);
+//         ctx.lineTo(112,0);
+//         ctx.stroke();
+//         ctx.restore();
+
+//         // Write seconds
+//         ctx.save();
+//         ctx.rotate(sec * Math.PI/30);
+//         ctx.strokeStyle = "#D40000";
+//         ctx.fillStyle = "#D40000";
+//         ctx.lineWidth = 6;
+//         ctx.beginPath();
+//         ctx.moveTo(-30,0);
+//         ctx.lineTo(83,0);
+//         ctx.stroke();
+//         ctx.beginPath();
+//         ctx.arc(0,0,10,0,Math.PI*2,true);
+//         ctx.fill();
+//         ctx.beginPath();
+//         ctx.arc(95,0,10,0,Math.PI*2,true);       
+//         ctx.stroke();
+
+//         ctx.beginPath();
+//         ctx.fillStyle = "rgba(0,0,0,1)";
+//         ctx.arc(0,0,3,0,Math.PI*2,true);
+//         ctx.fill();
+
+//         ctx.restore();
+
+//         ctx.save();
+//         ctx.beginPath();
+//         ctx.lineWidth = 14;
+//         ctx.globalCompositeOperation = "destination-over";
+//         ctx.strokeStyle = '#325FA2';
+//         var radgrad = ctx.createRadialGradient(50, 50, 60, 0 , 0, 142);
+//             radgrad.addColorStop(0, '#fff');
+//             radgrad.addColorStop(0.05, '#ededed');
+//         ctx.fillStyle = radgrad;
+//         ctx.arc(0,0,142,0,Math.PI*2,true);
+//         ctx.stroke();
+//         ctx.fill();
+//         ctx.restore();
+
+//         ctx.restore();
+//     }
+//     init();
+// }
+// to_load.push(clock);
 
 // function Translate() {
 
