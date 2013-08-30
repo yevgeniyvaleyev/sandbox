@@ -94,14 +94,17 @@ var gol = function() {
         for (var y = 0; y < life_collection.length; y++) {
             var _tmpRowLength = life_collection[y].length;
             for (var i = 0; i < _tmpRowLength; i++) {
-                    var x = life_collection[y][i];
+                    var x = life_collection[y][i].x_position,
+                        old_life_color = '#eaa825',
+                        new_life_color = '#5cd14f',
+                        life_color = !!life_collection[y][i].is_old ? old_life_color : new_life_color;
                     ctx.save();
                     ctx.beginPath();
                     var x0 = x * cell_size + cell_size/2,
                         y0 = y * cell_size + cell_size/2,
                         gradient = ctx.createRadialGradient(x0, y0, cell_size/4, x0, y0, cell_size/2);
 
-                    gradient.addColorStop(0, '#5cd14f');
+                    gradient.addColorStop(0, life_color);
                     gradient.addColorStop(1, '#000');
                     gradient.addColorStop(1, 'rgba(0,0,0,0)');
 

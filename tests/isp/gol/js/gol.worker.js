@@ -29,7 +29,7 @@ function initialData(data) {
             number = (x%division == 0) ? Math.floor(Math.random() * 2) : 0;
             tmp_map[y].push(number);
             if (number) {
-                life_map[y].push(x);
+                life_map[y].push({x_position: x, is_old: false});
             }
         }
     }
@@ -92,11 +92,11 @@ function generationData() {
     for (var y2 = 0; y2 < map.length; y2++) {
         life_map[y2] = [];
         for (var x2 = 0; x2 < map[y2].length; x2++) {
+            if (map[y2][x2]) {
+                life_map[y2].push({x_position: x2, is_old: !!tempMap[y2][x2]})
+            }
             if (map[y2][x2] != tempMap[y2][x2]) {
                 map[y2][x2] = tempMap[y2][x2];
-            }
-            if (map[y2][x2]) {
-                life_map[y2].push(x2)
             }
         }
     }
