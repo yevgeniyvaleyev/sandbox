@@ -6,12 +6,12 @@
 var gol = function() {
     var paused  = true,
         game_id = '#gol',
-        url     = 'config.json',
         delay   = 0,
         cell_size = 4,
         canvas = document.getElementById('board'),
         ctx = canvas.getContext('2d'),
         worker_src = 'js/gol.worker.js',
+        old_life_collection = [],
         worker = null;
 
     /**
@@ -82,37 +82,55 @@ var gol = function() {
     }
 
     /**
+     * Creates lived cells
+     * @param life_collection
+     */
+    var createLivedCell = function (life_collection) {
+        if (old_life_collection) {
+            for (var y = 0; y < life_collection.length; y++) {
+                var _tmpRowLength = life_collection[y].length;
+                for (var i = 0; i < _tmpRowLength; i++) {
+                    var x = life_collection[y][i].x_position,
+                        life_color = '#031405';
+                    ctx.beginPath();
+                    var x0 = x * cell_size + cell_size/2,
+                        y0 = y * cell_size + cell_size/2;
+
+                    ctx.fillStyle = life_color;
+                    ctx.arc(x0, y0, (cell_size/2)*1.1, 0, Math.PI * 2, true);
+                    ctx.fill();
+                }
+            }
+        }
+        old_life_collection = life_collection;
+    }
+    /**
      * Draws life
      * @param map
      */
     var drawLife = function (life_collection) {
 
-        ctx.beginPath();
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        createLivedCell(life_collection);
 
         for (var y = 0; y < life_collection.length; y++) {
             var _tmpRowLength = life_collection[y].length;
             for (var i = 0; i < _tmpRowLength; i++) {
-                    var x = life_collection[y][i].x_position,
-                        age = life_collection[y][i].age,
-                        color = (age <= 250) ? age : 250,
-                        life_color = 'rgba(0,' + 250 + ',0,0.9)';
+                var x = life_collection[y][i].x_position,
+                    age = life_collection[y][i].age,
+                    age_1_hue = (age <= 250) ? age : 250,
+                    age_2_hue = (age > 250 && age <= 500) ? age - 250 : 0,
+                    age_2_hue = (age > 500) ? 250 : age_2_hue,
+                    life_color = 'rgba(' + age_1_hue + ',250, ' + age_2_hue + ',1)';
 
-                    ctx.save();
-                    ctx.beginPath();
-                    var x0 = x * cell_size + cell_size/2,
-                        y0 = y * cell_size + cell_size/2,
-                        gradient = ctx.createRadialGradient(x0, y0, cell_size/4, x0, y0, cell_size/2);
+                ctx.save();
+                ctx.beginPath();
+                var x0 = x * cell_size + cell_size/2,
+                    y0 = y * cell_size + cell_size/2;
 
-                    gradient.addColorStop(0, life_color);
-                    gradient.addColorStop(1, '#000');
-                    gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
-                    ctx.fillStyle = gradient;
-                    ctx.rect(x * cell_size, y * cell_size, cell_size, cell_size);
-                    ctx.fill();
-                    ctx.restore();
+                ctx.fillStyle = life_color;
+                ctx.arc(x0, y0, cell_size/3, 0, Math.PI * 2, true);
+                ctx.fill();
+                ctx.restore();
             }
         }
     }
