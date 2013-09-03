@@ -12,7 +12,8 @@ var gol = function() {
         ctx = canvas.getContext('2d'),
         worker_src = 'js/gol.worker.js',
         old_life_collection = [],
-        worker = null;
+        worker = null,
+        worker_callbacks = [];
 
     /**
      * Inits the game.
@@ -28,19 +29,27 @@ var gol = function() {
     }
 
     /**
-     * Triggers a cell.
-     * @param object event, element event
-     * @access private
-     * @return null
+     * Returns mouse position on canvas
+     * @param canvas
+     * @param evt
+     * @returns {{x: number, y: number}}
      */
-    var triggerCell = function (event) {
-        var pos = $(event.target).data('pos').split('-');
-        var _x  = pos[1];
-        var _y  = pos[0];
-        if (!isNaN(_x) && !isNaN(_y)) {
-            $(event.target).toggleClass('alive').addClass('visited');
-            map[_y][_x] = !!map[_y][_x] ? 0 : 1;
-        }
+    var getCellPos = function (canvas, evt) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: parseInt((evt.clientX - rect.left) / cell_size, 10),
+            y: parseInt((evt.clientY - rect.top) / cell_size, 10)
+        };
+    }
+
+    /**
+     * Adds new life
+     */
+    var addLife = function (event) {
+        var mouse_pos = getCellPos(this, event);
+        generateData('new_life', mouse_pos, function () {
+            console.log('UJEEN --->  --->  ', 1);
+        });
     }
 
     /**
@@ -66,7 +75,7 @@ var gol = function() {
     var initActions = function () {
         $('.run', game_id).bind('click', run);
         $('.reload', game_id).bind('click', initBoard);
-        $('.board', game_id).delegate('div','click', triggerCell);
+        $(canvas).bind('click', addLife);
         initDelayControl();
     };
 
@@ -141,6 +150,9 @@ var gol = function() {
      */
     var generateData = function (type, data, callback) {
         if (!!window.Worker) {
+            if (!worker_callbacks[type]) {
+                worker_callbacks[type] = callback;
+            }
             if (!worker) {
                 worker = new Worker(worker_src);
             }
@@ -149,8 +161,8 @@ var gol = function() {
                 data: data
             });
             worker.onmessage = function (event) {
-                if (event.data.type == type) {
-                    callback(event.data.data);
+                if (!!worker_callbacks[event.data.type]) {
+                    worker_callbacks[event.data.type](event.data.data);
                 }
             };
         } else {
@@ -200,12 +212,13 @@ var gol = function() {
             paused = !paused;
         }
         generation(function(){
-            if (!paused) {
-                $(self).val('stop');
-                setTimeout(run, delay);
-            } else {
-                $(self).val('run');
-            }
+            run();
+//            if (!paused) {
+//                $(self).val('stop');
+//                setTimeout(run, delay);
+//            } else {
+//                $(self).val('run');
+//            }
         });
     };
 

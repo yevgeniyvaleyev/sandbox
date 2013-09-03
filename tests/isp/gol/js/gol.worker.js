@@ -7,7 +7,9 @@ var neighbourOffset = [
         [-1, -1],[0 , -1],[1 , -1],[-1,  0],
         [1 ,  0],[-1,  1],[0 ,  1],[1 ,  1]
     ],
-    map = [];
+    map = [],
+    new_life = {};
+
 
 /**
  * Initial set od data
@@ -62,11 +64,47 @@ var isAlive = function (map, x, y) {
 }
 
 /**
+ * Add a new life to be used in next generation
+ * @param data
+ */
+function newLife(data) {
+    var x = parseInt(data.x, 10),
+        y = parseInt(data.y, 10);
+    new_life = {
+        x: x,
+        y: y
+    }
+    return {}
+}
+
+/**
+ * Adds God life
+ */
+function addGodLifeIfExist() {
+    if ('x' in new_life && 'y' in new_life) {
+
+        // Walking life
+        // **
+        // * *
+        // *
+        map[new_life.y][new_life.x] = 1;
+        map[new_life.y + 1][new_life.x] = 1;
+        map[new_life.y + 2][new_life.x] = 1;
+        map[new_life.y][new_life.x + 1] = 1;
+        map[new_life.y + 1][new_life.x + 2] = 1;
+    }
+    new_life = {};
+}
+
+/**
  * Generates a data of new generation
  * @param data
  * @returns {*}
  */
 function generationData() {
+
+    addGodLifeIfExist();
+
     var tempMap = JSON.parse(JSON.stringify(map)),
         life_map = [];
 
@@ -108,37 +146,31 @@ function generationData() {
             }
         }
     }
-//    for (var y2 = 0; y2 < map.length; y2++) {
-//        life_map[y2] = [];
-//        for (var x2 = 0; x2 < map[y2].length; x2++) {
-//            if (map[y2][x2]) {
-//                life_map[y2].push({x_position: x2, age: !!tempMap[y2][x2]})
-//            }
-//            if (map[y2][x2] != tempMap[y2][x2]) {
-//                map[y2][x2] = tempMap[y2][x2];
-//            }
-//        }
-//    }
     return life_map;
 }
 
 onmessage = function(event) {
-    var return_data = {
-        type: event.data.type,
-        data: {}
-    }
-    if (typeof event.data !== 'object' && event.data.type) {
-        return false;
-    }
+//    if (typeof event.data !== 'object' && event.data.type) {
+//        return false;
+//    }
     switch (event.data.type) {
         case 'initial':
-            return_data.data = initialData(event.data.data);
+            postMessage({
+                type: 'initial',
+                data: initialData(event.data.data)
+            })
             break;
         case 'generation':
-            return_data.data = generationData();
+            postMessage({
+                type: 'generation',
+                data: generationData()
+            });
             break;
-        default:
+        case 'new_life':
+            postMessage({
+                type: 'new_life',
+                data: newLife(event.data.data)
+            });
             break;
     }
-    postMessage(return_data);
 };
