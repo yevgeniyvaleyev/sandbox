@@ -47,9 +47,7 @@ var gol = function() {
      */
     var addLife = function (event) {
         var mouse_pos = getCellPos(this, event);
-        generateData('new_life', mouse_pos, function () {
-            console.log('UJEEN --->  --->  ', 1);
-        });
+        generateData('new_life', mouse_pos);
     }
 
     /**
@@ -212,13 +210,12 @@ var gol = function() {
             paused = !paused;
         }
         generation(function(){
-            run();
-//            if (!paused) {
-//                $(self).val('stop');
-//                setTimeout(run, delay);
-//            } else {
-//                $(self).val('run');
-//            }
+            if (!paused) {
+                $(self).val('stop');
+                setTimeout(run, delay);
+            } else {
+                $(self).val('run');
+            }
         });
     };
 
