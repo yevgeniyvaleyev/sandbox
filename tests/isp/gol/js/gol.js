@@ -150,7 +150,7 @@ var gol = function() {
                 var x = life_collection[y][i].x_position,
                     age = life_collection[y][i].age,
                     life_color = getColor(age),
-                    radius = age > 3000 ? cell_size/1.8 : cell_size/3;
+                    radius = cell_size/3;
 
                 ctx.save();
                 ctx.beginPath();
