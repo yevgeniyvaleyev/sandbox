@@ -111,6 +111,31 @@ var gol = function() {
         }
         old_life_collection = life_collection;
     }
+
+    /**
+     * Returns critical color
+     * @param age
+     * @returns {string}
+     */
+    function getColor(age) {
+        var age_1_hue = (age <= 250) ? age : 250,
+            age_2_hue = (age > 250 && age <= 500) ? age - 250 : 0;
+
+        if (age > 3000) {
+            return age%2?'red':'white';
+        }
+        if (age > 2000) {
+            return '#fc6464'
+        }
+        if (age > 1000) {
+            return '#fca1a1'
+        }
+        if (age > 500) {
+            age_2_hue = 250;
+        }
+        return 'rgba(' + age_1_hue + ',250, ' + age_2_hue + ',1)';
+    }
+
     /**
      * Draws life
      * @param map
@@ -124,10 +149,8 @@ var gol = function() {
             for (var i = 0; i < _tmpRowLength; i++) {
                 var x = life_collection[y][i].x_position,
                     age = life_collection[y][i].age,
-                    age_1_hue = (age <= 250) ? age : 250,
-                    age_2_hue = (age > 250 && age <= 500) ? age - 250 : 0,
-                    age_2_hue = (age > 500) ? 250 : age_2_hue,
-                    life_color = 'rgba(' + age_1_hue + ',250, ' + age_2_hue + ',1)';
+                    life_color = getColor(age),
+                    radius = age > 3000 ? cell_size/1.8 : cell_size/3;
 
                 ctx.save();
                 ctx.beginPath();
@@ -135,7 +158,7 @@ var gol = function() {
                     y0 = y * cell_size + cell_size/2;
 
                 ctx.fillStyle = life_color;
-                ctx.arc(x0, y0, cell_size/3, 0, Math.PI * 2, true);
+                ctx.arc(x0, y0, radius, 0, Math.PI * 2, true);
                 ctx.fill();
                 ctx.restore();
             }

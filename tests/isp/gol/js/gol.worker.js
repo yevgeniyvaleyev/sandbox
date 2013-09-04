@@ -69,31 +69,40 @@ var isAlive = function (map, x, y) {
  */
 function newLife(data) {
     var x = parseInt(data.x, 10),
-        y = parseInt(data.y, 10);
-    new_life = {
+        y = parseInt(data.y, 10),
+        key = Math.floor(Math.random() * 1000);
+
+    new_life[key] = {
         x: x,
         y: y
-    }
-    return {}
+    };
 }
 
 /**
  * Adds God life
  */
 function addGodLifeIfExist() {
-    if ('x' in new_life && 'y' in new_life) {
+    for (var prop in new_life) {
+        var item = new_life[prop],
+            height_limit = !isNaN(parseInt(map[item.y + 2])),
+            width_limit = !isNaN(parseInt(map[0][item.x + 2]));
 
         // Walking life
         // **
         // * *
         // *
-        map[new_life.y][new_life.x] = 1;
-        map[new_life.y + 1][new_life.x] = 1;
-        map[new_life.y + 2][new_life.x] = 1;
-        map[new_life.y][new_life.x + 1] = 1;
-        map[new_life.y + 1][new_life.x + 2] = 1;
-    }
-    new_life = {};
+        if (height_limit && width_limit) {
+            map[item.y][item.x] = 1;
+            map[item.y + 1][item.x] = 1;
+            map[item.y + 2][item.x] = 1;
+            map[item.y][item.x + 1] = 1;
+            map[item.y + 1][item.x + 2] = 1;
+        } else {
+            map[item.y][item.x] = 0;
+        }
+
+        delete new_life[prop]
+    };
 }
 
 /**
@@ -143,6 +152,10 @@ function generationData() {
 
             if (map[y2][x2]) {
                 life_map[y2].push({x_position: x2, age: map[y2][x2]})
+            }
+
+            if (map[y2][x2] > 3100) {
+                newLife({x: x2, y: y2});
             }
         }
     }
