@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" ng:app="gallery">
+    <head>
+        <meta charset="utf-8">
+        <title>Gallery</title>
+        <link rel="stylesheet" href="styles/main.css">
+    </head>
+    <body>
+        <div ng-controller="GalleryController" class="splitter-directive" data-min-width="400" id="gallery">
+            <div class="list-directive view-pane" data-list="productsList" data-filter="filter"></div>
+            <div class="details-directive view-pane" data-product="product" ></div>
+        </div>
+
+        <!--Angular uses jquery for angular.element-->
+        <script src="components/jquery/jquery.min.js"></script>
+        <script src="components/unstable-angular-complete/angular.min.js"></script>
+        <script src="components/unstable-angular-complete/angular-resource.min.js"></script>
+        <script src="components/unstable-angular-complete/angular-sanitize.min.js"></script>
+
+        <script src="js/app.js"></script>
+        <script src="js/services/configConstant.js"></script>
+        <script src="js/services/galleryService.js"></script>
+
+        <script src="js/controllers/gallery-controller.js"></script>
+
+        <script src="js/directives/details-directive.js"></script>
+        <script src="js/directives/list-directive.js"></script>
+        <script src="js/directives/splitter-directive.js"></script>
+
+        <script src="js/filters/rating-filter.js"></script>
+        <script src="js/filters/money-filter.js"></script>
+    </body>
+</html>

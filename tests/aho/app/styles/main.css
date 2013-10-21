@@ -1,0 +1,201 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+#gallery {
+    font-size: 14px;
+    font-family: Tahoma;
+    min-height: 100%;
+    color: #7D7581;
+    min-width: 804px;
+    position: relative;
+    overflow: hidden;
+}
+#gallery a {
+    color: #62A9CB;
+}
+#products-list:focus {
+    outline: none;
+    box-shadow: inset 0 0 5px green;
+}
+#products-list li.selected {
+    box-shadow: inset 0 0 100px #e5e5e5;
+}
+#products-list:focus li.selected {
+    background: #FFE29A;
+}
+#products-list li:hover {
+    box-shadow: inset 0 0 100px #f9e7bd !important;
+}
+#products-list li {
+    display: block;
+    min-height: 85px;
+    padding: 5px 5px 5px 100px;
+    position: relative;
+}
+#gallery .rating,
+#gallery .price {
+    display: inline-block;
+    line-height: 21px;
+    height: 18px;
+}
+#products-list li img {
+    position: absolute;
+    max-height: 75px;
+    max-width: 75px;
+    left: 10px;
+    top: 10px;
+}
+#products-list li h2 {
+    font-size: 14px;
+    text-transform: capitalize;
+    color: #62A9CB;
+    padding: 0;
+    margin: 0;
+}
+#products-list, #details {
+    margin: 0;
+    padding: 0;
+    display: block;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+.list-directive .filter {
+    position: absolute;
+    right: 15px;
+    top: -60px;
+    font-size: 12px;
+    background: #d2d7d4;
+    border-bottom-left-radius: 5px;
+    padding: 5px;
+    box-shadow: inset 0 0 10px white;
+    width: 160px;
+    height: 50px;
+}
+#gallery .list-directive .filter:hover {
+    top: 0px;
+}
+#gallery .list-directive .filter:after {
+    position: absolute;
+    box-shadow: inset 0 0 10px white;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 15px;
+    background: #d2d7d4;
+    content: 'filter';
+    font-size: 9px;
+    padding: 5px;
+    line-height: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    right: 0;
+    top: 60px;
+}
+#gallery .list-directive .filter label {
+    display: block;
+    height: 25px;
+    line-height: 21px;
+    text-align: left;
+}
+#gallery .list-directive .filter label select {
+    float: right;
+    clear: right;
+}
+#gallery .no-select {
+    -webkit-user-select: none;
+}
+#details .description {
+    margin: 10px;
+    text-align: justify;
+}
+#details .description {
+    list-style-position: inside;
+}
+#details img {
+    display: block;
+    float: left;
+    margin: 10px;
+    border: 1px solid grey;
+    max-width: 400px;
+    max-height: 400px;
+}
+#details h3 {
+    text-transform: capitalize;
+    display: inline-block;
+    padding: 0;
+    margin: 10px 0;
+}
+#gallery .rating {
+    background: url('http://www.demo.onehippo.com/images/rating.png') no-repeat 0 0;
+    display: inline-block;
+    text-align: right;
+    font-weight: bold;
+    padding-left: 95px;
+}
+#gallery .splitter {
+    position: absolute;
+    width: 2px;
+    left: 50%;
+    border: 1px solid #808080;
+    border-bottom: none;
+    border-top: none;
+    height: 100%;
+    cursor: ew-resize;
+}
+#gallery .splitter:hover {
+    background-color: #c1e7d2;
+    border-color: green;
+}
+
+#gallery .stars-1 { background-position: 0px -20px; }
+#gallery .stars-2 { background-position: 0px -40px; }
+#gallery .stars-3 { background-position: 0px -60px; }
+#gallery .stars-4 { background-position: 0px -80px; }
+#gallery .stars-5 { background-position: 0px -100px; }
+#gallery .stars-6 { background-position: 0px -120px; }
+#gallery .stars-7 { background-position: 0px -140px; }
+#gallery .stars-8 { background-position: 0px -160px; }
+#gallery .stars-9 { background-position: 0px -180px; }
+#gallery .stars-10 { background-position: 0px -200px; }
+#gallery .stars-11 { background-position: 0px -220px; }
+#gallery .stars-12 { background-position: 0px -240px; }
+#gallery .stars-13 { background-position: 0px -260px; }
+#gallery .stars-14 { background-position: 0px -280px; }
+#gallery .stars-15 { background-position: 0px -300px; }
+#gallery .stars-16 { background-position: 0px -320px; }
+#gallery .stars-17 { background-position: 0px -340px; }
+#gallery .stars-18 { background-position: 0px -360px; }
+#gallery .stars-19 { background-position: 0px -380px; }
+#gallery .stars-20 { background-position: 0px -400px; }
+#gallery .stars-21 { background-position: 0px -420px; }
+#gallery .stars-22 { background-position: 0px -440px; }
+#gallery .stars-23 { background-position: 0px -460px; }
+#gallery .stars-24 { background-position: 0px -480px; }
+#gallery .stars-25 { background-position: 0px -500px; }
+#gallery .stars-26 { background-position: 0px -520px; }
+#gallery .stars-27 { background-position: 0px -540px; }
+#gallery .stars-28 { background-position: 0px -560px; }
+#gallery .stars-29 { background-position: 0px -580px; }
+#gallery .stars-30 { background-position: 0px -600px; }
+#gallery .stars-31 { background-position: 0px -620px; }
+#gallery .stars-32 { background-position: 0px -640px; }
+#gallery .stars-33 { background-position: 0px -660px; }
+#gallery .stars-34 { background-position: 0px -680px; }
+#gallery .stars-35 { background-position: 0px -700px; }
+#gallery .stars-36 { background-position: 0px -720px; }
+#gallery .stars-37 { background-position: 0px -740px; }
+#gallery .stars-38 { background-position: 0px -760px; }
+#gallery .stars-39 { background-position: 0px -780px; }
+#gallery .stars-40 { background-position: 0px -800px; }
+#gallery .stars-41 { background-position: 0px -820px; }
+#gallery .stars-42 { background-position: 0px -840px; }
+#gallery .stars-43 { background-position: 0px -860px; }
+#gallery .stars-44 { background-position: 0px -880px; }
+#gallery .stars-45 { background-position: 0px -900px; }
+#gallery .stars-46 { background-position: 0px -920px; }
+#gallery .stars-47 { background-position: 0px -940px; }
+#gallery .stars-48 { background-position: 0px -960px; }
+#gallery .stars-49 { background-position: 0px -980px; }
+#gallery .stars-50 { background-position: 0px -1000px; }

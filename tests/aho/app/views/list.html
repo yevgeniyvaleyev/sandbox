@@ -1,0 +1,19 @@
+<ul tabindex="0" id="{{id}}" ng-keydown="selectProduct($event)">
+    <li ng-repeat="(key, product) in productsList" ng-click="selectProduct($event)" data-key="{{key}}">
+        <img ng-src="{{product.smallThumbnail}}" />
+        <h2>{{product.localizedName}}</h2>
+        <span class="price">{{product.price | money}}</span> | <span class="rating stars-{{product.rating | rating}}">{{product.rating}}</span>
+    </li>
+</ul>
+<div class="filter">
+    <label>
+        Sort by:
+        <select ng-model="sort" ng-change="selectFilter()" ng-options="value for value in filter.list.sort"></select>
+    </label>
+    <label>
+        Direction:
+        <select ng-model="direction" ng-change="selectFilter()" ng-options="value for value in filter.list.direction"></select>
+    </label>
+</div>
+
+

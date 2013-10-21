@@ -1,0 +1,11 @@
+<div id="{{id}}">
+    <div ng-if="product">
+        <img ng-src="{{product.image}}" ng-show="product.image"/>
+        <h3>{{product.localizedName}}</h3><br>
+        <span class="price">{{product.price | money}}</span> | <span class="rating stars-{{product.rating | rating}}">{{product.rating}}</span>
+        <div class="description" ng-bind-html="product.description"></div>
+    </div>
+    <div ng-hide="product">
+        Please, select a product
+    </div>
+</div>
