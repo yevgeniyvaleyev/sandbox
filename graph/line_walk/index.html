@@ -3,9 +3,34 @@
 <head>
     <title>Line walk</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+        canvas {
+            margin: 0 auto;
+        }
+        #rating {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+        }
+        #rating div {
+            position: relative;
+        }
+        #rating span {
+            display: inline-block;
+            color: #808080;
+            font-family: Verdana;
+            font-size: 8px;
+            position: absolute;
+            right: -50px;
+        }
+    </style>
 </head>
 <body>
     <canvas></canvas>
+    <div id="rating"></div>
     <script src="experiment.js"></script>
 </body>
 </html>
