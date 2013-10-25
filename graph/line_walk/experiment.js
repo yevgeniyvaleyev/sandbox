@@ -20,6 +20,10 @@
             context.fillRect(0, 0, canvas.width , canvas.height);
         }
 
+        this.getMap = function () {
+            return map;
+        }
+
         this.generateNewCoords = function (old_x, old_y) {
             var y = old_y + Math.floor(Math.random() * 3 - 1) * coefficient,
                 x = old_x + Math.floor(Math.random() * 3 - 1) * coefficient;
@@ -166,13 +170,13 @@
 //            var status = false,
 //                region_obj;
 //
-//            if (!Army.map) {
-//                Army.map = [];
+//            if (!field.getMap()) {
+//                field.getMap() = [];
 //            }
-//            if (!Army.map[y]) {
-//                Army.map[y] = [];
+//            if (!field.getMap()[y]) {
+//                field.getMap()[y] = [];
 //            }
-//            region_obj = Army.map[y][x];
+//            region_obj = field.getMap()[y][x];
 //
 //            if (!region_obj || region_obj.isSeparatism() || region_obj.getId() == id) {
 //                if (!!region_obj) {
@@ -182,7 +186,7 @@
 //                        region_obj.occupy(id, color);
 //                    }
 //                } else {
-//                    Army.map[y][x] = new Region(x, y, coefficient, color, id, lost_time, context);
+//                    field.getMap()[y][x] = new Region(x, y, coefficient, color, id, lost_time, context);
 //                }
 //                status = true;
 //            }
@@ -253,14 +257,14 @@
 
     // TODO: refactor this mess
     function rating() {
-        var statistics_obj = {}, statistics_array = [];
+        var statistics_obj = {}, statistics_array = [], map = field.getMap();
         // sort ratings by id
-        for (var y in Army.map) {
-            for (var x in Army.map[y]) {
-                if (statistics_obj[Army.map[y][x].getColor()]) {
-                    statistics_obj[Army.map[y][x].getColor()]++;
+        for (var y in map) {
+            for (var x in map[y]) {
+                if (statistics_obj[map[y][x].getColor()]) {
+                    statistics_obj[map[y][x].getColor()]++;
                 } else {
-                    statistics_obj[Army.map[y][x].getColor()] = 1;
+                    statistics_obj[map[y][x].getColor()] = 1;
                 }
             }
         }
