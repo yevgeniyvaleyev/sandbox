@@ -108,11 +108,11 @@ to_load.push(panorama);
 
 //         // Hour marks
 //         ctx.save();
-//         ctx.fillStyle = 'blue';        
+//         ctx.fillStyle = 'blue';
 //         for (var i=0;i<12;i++){
 //             ctx.beginPath();
 //             ctx.rotate(Math.PI/6);
-//             ctx.moveTo(hours_offset_x,0); 
+//             ctx.moveTo(hours_offset_x,0);
 //             // ctx.lineTo(120,0);
 //             // ctx.stroke();
 
@@ -182,7 +182,7 @@ to_load.push(panorama);
 //         ctx.arc(0,0,10,0,Math.PI*2,true);
 //         ctx.fill();
 //         ctx.beginPath();
-//         ctx.arc(95,0,10,0,Math.PI*2,true);       
+//         ctx.arc(95,0,10,0,Math.PI*2,true);
 //         ctx.stroke();
 
 //         ctx.beginPath();

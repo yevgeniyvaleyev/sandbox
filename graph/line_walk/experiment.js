@@ -3,10 +3,14 @@
 
     document.body.style.background = '#191919';
 
-    function battleField(canvas) {
+    function BattleField(canvas) {
 
         var armies_collection = [],
-            context = canvas.getContext('2d');
+            context = canvas.getContext('2d'),
+            lost_time = 30000, // time when a cell is considered as nobody's
+            coefficient = 10, // have to be divided on 2
+            map = [],
+            self = this;
 
         var initField = function () {
             canvas.width = canvas.style.width = 1000;
@@ -16,47 +20,118 @@
             context.fillRect(0, 0, canvas.width , canvas.height);
         }
 
+        this.generateNewCoords = function (old_x, old_y) {
+            var y = old_y + Math.floor(Math.random() * 3 - 1) * coefficient,
+                x = old_x + Math.floor(Math.random() * 3 - 1) * coefficient;
+
+            if (x < 0) {
+                x = Math.abs(x);
+            }
+            if (x >= canvas.width) {
+                x = canvas.width - coefficient;
+            }
+            if (y < 0) {
+                y = Math.abs(y);
+            }
+            if (y >= canvas.height) {
+                y = canvas.height - coefficient;
+            }
+            return {
+                x: x,
+                y: y
+            }
+        }
+
+        this.generateInitCoords = function () {
+            var tmp_x = Math.floor(Math.random() * (canvas.width - coefficient)),
+                tmp_y = Math.floor(Math.random() * (canvas.height - coefficient));
+
+            return {
+                x: Math.round(tmp_x / coefficient) * coefficient,
+                y: Math.round(tmp_y / coefficient) * coefficient
+            }
+        }
+
+        this.addToMap = function (y, x, id, color) {
+            var status = false,
+                region_obj;
+
+            if (!map) {
+                map = [];
+            }
+            if (!map[y]) {
+                map[y] = [];
+            }
+            region_obj = map[y][x];
+
+            if (!region_obj || region_obj.isSeparatism() || region_obj.getId() == id) {
+                if (!!region_obj) {
+                    if (region_obj.getId() == id) {
+                        region_obj.updateControl();
+                    } else {
+                        region_obj.occupy(id, color);
+                    }
+                } else {
+                    map[y][x] = new Region(x, y, coefficient, color, id, lost_time, context);
+                }
+                status = true;
+            }
+            return status;
+        }
+
         this.addArmy = function (color) {
-            var army = new Army(color, context);
+            var army = new Army(color, self);
+            // TODO think about registering methods
             armies_collection.push(army);
         }
 
-        this.getArmiesCollection = function () {
-            return armies_collection;
-        }
+//        this.getArmiesCollection = function () {
+//            return armies_collection;
+//        }
 
         initField();
 
     }
 
-    function region(x, y, width, color, id, lost_time, context) {
-        var x = x,
-            color = color,
-            id = id,
-            y = y,
+    function Region(x, y, width, color, id, lost_time, context) {
+        var region_x = x,
+            region_color = color,
+            region_id = id,
+            region_y = y,
             separatism = false,
-            lost_time = lost_time,
-            control_timeout;
+            region_lost_time = lost_time,
+            control_timeout,
+            mark_width = width * 0.5,
+            dummy_color = '#000000',
+            self = this;
 
         this.getId = function () {
-            return id;
+            return region_id;
         }
 
         this.getColor = function () {
-            return color;
+            return region_color;
         }
 
         this.isSeparatism = function () {
             return separatism;
         }
 
+        this.occupy = function (id, color) {
+            region_id = id;
+            region_color = color;
+            self.updateControl();
+        }
+
         this.updateControl = function () {
             markVisited();
+            separatism = false;
             clearTimeout(control_timeout);
             control_timeout = setTimeout(function(){
                 separatism = true;
-                paintArea(x, y, '#000000', width*0.5, true);
-            }, lost_time)
+                // mark with small square
+                paintArea(region_x, region_y, dummy_color, mark_width, true);
+            }, region_lost_time)
         };
 
         var paintArea = function (x, y, color, width, centered) {
@@ -72,105 +147,97 @@
 
         var markVisited = function () {
             setTimeout(function(){
-                paintArea(x, y, color, width);
+                paintArea(region_x, region_y, region_color, width);
             }, 0);
-            paintArea(x, y, '#000000', width);
-        }   
-        
+            paintArea(region_x, region_y, dummy_color, width);
+        }
+
         markVisited();
-        this.updateControl();      
+        this.updateControl();
     }
 
-    function Army(color, context) {
-        var context = context,
-            coefficient = 5, // have to be divided on 2
-            x = null,
-            y = null,
-            lost_time = 90000, // time when a cell is considered as nobody's
-            color = color,
-            id = Math.floor(Math.random() * 1000000000);
-
-        this.getStatistics = function () {
-            return {
-                color: color,
-                id: id
-            }
-        }
+    function Army(color, battleField) {
+        var color = color,
+            id = Math.floor(Math.random() * 1000000000),
+            coords = battleField.generateInitCoords();
 
         // TODO seems this method should be in battle field class
-        var addToMap = function (y, x, id) {
-            var status = false,
-                current_time = new Date().valueOf();
+//        var addToMap = function (y, x, id) {
+//            var status = false,
+//                region_obj;
+//
+//            if (!Army.map) {
+//                Army.map = [];
+//            }
+//            if (!Army.map[y]) {
+//                Army.map[y] = [];
+//            }
+//            region_obj = Army.map[y][x];
+//
+//            if (!region_obj || region_obj.isSeparatism() || region_obj.getId() == id) {
+//                if (!!region_obj) {
+//                    if (region_obj.getId() == id) {
+//                        region_obj.updateControl();
+//                    } else {
+//                        region_obj.occupy(id, color);
+//                    }
+//                } else {
+//                    Army.map[y][x] = new Region(x, y, coefficient, color, id, lost_time, context);
+//                }
+//                status = true;
+//            }
+//            return status;
+//        }
 
-            if (!Army.map) {
-                Army.map = [];
-            }
-            if (!Army.map[y]) {
-                Army.map[y] = [];
-            }
-            
-            if (!Army.map[y][x] || Army.map[y][x].isSeparatism() || Army.map[y][x].getId() == id) {
-                if (!!Army.map[y][x] && Army.map[y][x].getId() == id) {
-                    Army.map[y][x].updateControl();
-                } else {
-                    // TODO add updating with enemy data rather create new, create new only if empty
-                    Army.map[y][x] = new region(x, y, coefficient, color, id, lost_time, context);
-                }
-                status = true;
-            }
-            return status;
-        }
+//        var generateNewCoords = function (old_x, old_y) {
+//            var y = old_y + Math.floor(Math.random() * 3 - 1) * coefficient,
+//                x = old_x + Math.floor(Math.random() * 3 - 1) * coefficient;
+//
+//            if (x < 0) {
+//                x = Math.abs(x);
+//            }
+//            if (x >= canvas.width) {
+//                x = canvas.width - coefficient;
+//            }
+//            if (y < 0) {
+//                y = Math.abs(y);
+//            }
+//            if (y >= canvas.height) {
+//                y = canvas.height - coefficient;
+//            }
+//            return {
+//                x: x,
+//                y: y
+//            }
+//        }
+//
+//        var generateInitCoords = function () {
+//            var tmp_x = Math.floor(Math.random() * (canvas.width - coefficient)),
+//                tmp_y = Math.floor(Math.random() * (canvas.height - coefficient));
+//
+//            x = Math.round(tmp_x / coefficient) * coefficient;
+//            y = Math.round(tmp_y / coefficient) * coefficient;
+//        }
 
-        var generateNewCoords = function (old_x, old_y) {
-            var y = old_y + Math.floor(Math.random() * 3 - 1) * coefficient,
-                x = old_x + Math.floor(Math.random() * 3 - 1) * coefficient;
-
-            if (x < 0) {
-                x = Math.abs(x);
-            }
-            if (x > canvas.width) {
-                x = canvas.width;
-            }
-            if (y < 0) {
-                y = Math.abs(y);
-            }
-            if (y > canvas.height) {
-                y = canvas.height;
-            }
-            return {
-                x: x,
-                y: y
-            }
-        }
-
-        var generateInitCoords = function () {
-            var tmp_x = Math.floor(Math.random() * (canvas.width - coefficient)),
-                tmp_y = Math.floor(Math.random() * (canvas.height - coefficient));
-
-            x = Math.round(tmp_x / coefficient) * coefficient;
-            y = Math.round(tmp_y / coefficient) * coefficient;
-        }
-
-        var paintArea = function (x, y, color) {
-            context.save();
-            context.fillStyle = color;
-            context.fillRect(x - coefficient/2 - 1, y - coefficient/2 - 1, coefficient - 1, coefficient - 1);
-            context.restore();
-        }
+//        var paintArea = function (x, y, color) {
+//            context.save();
+//            context.fillStyle = color;
+//            context.fillRect(x - coefficient/2 - 1, y - coefficient/2 - 1, coefficient - 1, coefficient - 1);
+//            context.restore();
+//        }
 
         var occupyArea = function (old_x, old_y) {
-            var new_coords = null;
             do {
-                new_coords = generateNewCoords(old_x, old_y);
-            } while (!addToMap(new_coords.y, new_coords.x, id));
-            setTimeout(occupyArea, 0, new_coords.x, new_coords.y);
+                coords = battleField.generateNewCoords(old_x, old_y);
+            } while (!battleField.addToMap(coords.y, coords.x, id, color));
+
+            setTimeout(occupyArea, 0, coords.x, coords.y);
         }
 
-        generateInitCoords();
-        occupyArea(x, y);
+        occupyArea(coords.x, coords.y);
     }
 
-    var field = new battleField(canvas);
+    var field = new BattleField(canvas);
 
     field.addArmy('green');
     field.addArmy('red');
@@ -215,9 +282,9 @@
             var el = document.createElement('DIV'),
                 position = parseInt(index) + 1;
 
-                el.style.width = (statistics_array[index].rating/20) + 'px';
-                el.style.height = 8 + 'px';
-                el.style.background = statistics_array[index].color,
+            el.style.width = (statistics_array[index].rating/20) + 'px';
+            el.style.height = 8 + 'px';
+            el.style.background = statistics_array[index].color,
                 el.innerHTML = '<span>' + position + ' - ' + statistics_array[index].rating + '</span>';
             document.getElementById('rating').appendChild(el);
         }
