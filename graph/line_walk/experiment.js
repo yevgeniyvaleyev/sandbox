@@ -3,6 +3,11 @@
 
     document.body.style.background = '#191919';
 
+    /**
+     * Battle area when armies have a war. It manages territories and armies
+     * @param canvas
+     * @constructor
+     */
     function BattleField(canvas) {
 
         var armies_collection = [],
@@ -89,14 +94,20 @@
             armies_collection.push(army);
         }
 
-//        this.getArmiesCollection = function () {
-//            return armies_collection;
-//        }
-
         initField();
-
     }
 
+    /**
+     * Territory unit, it could be occupied and in separatism state
+     * @param x
+     * @param y
+     * @param width
+     * @param color
+     * @param id
+     * @param lost_time
+     * @param context
+     * @constructor
+     */
     function Region(x, y, width, color, id, lost_time, context) {
         var region_x = x,
             region_color = color,
@@ -160,85 +171,27 @@
         this.updateControl();
     }
 
+    /**
+     * Army class, it occupies territories or return control to
+     * own territories
+     * @param color
+     * @param battleField
+     * @constructor
+     */
     function Army(color, battleField) {
         var color = color,
             id = Math.floor(Math.random() * 1000000000),
-            coords = battleField.generateInitCoords();
-
-        // TODO seems this method should be in battle field class
-//        var addToMap = function (y, x, id) {
-//            var status = false,
-//                region_obj;
-//
-//            if (!field.getMap()) {
-//                field.getMap() = [];
-//            }
-//            if (!field.getMap()[y]) {
-//                field.getMap()[y] = [];
-//            }
-//            region_obj = field.getMap()[y][x];
-//
-//            if (!region_obj || region_obj.isSeparatism() || region_obj.getId() == id) {
-//                if (!!region_obj) {
-//                    if (region_obj.getId() == id) {
-//                        region_obj.updateControl();
-//                    } else {
-//                        region_obj.occupy(id, color);
-//                    }
-//                } else {
-//                    field.getMap()[y][x] = new Region(x, y, coefficient, color, id, lost_time, context);
-//                }
-//                status = true;
-//            }
-//            return status;
-//        }
-
-//        var generateNewCoords = function (old_x, old_y) {
-//            var y = old_y + Math.floor(Math.random() * 3 - 1) * coefficient,
-//                x = old_x + Math.floor(Math.random() * 3 - 1) * coefficient;
-//
-//            if (x < 0) {
-//                x = Math.abs(x);
-//            }
-//            if (x >= canvas.width) {
-//                x = canvas.width - coefficient;
-//            }
-//            if (y < 0) {
-//                y = Math.abs(y);
-//            }
-//            if (y >= canvas.height) {
-//                y = canvas.height - coefficient;
-//            }
-//            return {
-//                x: x,
-//                y: y
-//            }
-//        }
-//
-//        var generateInitCoords = function () {
-//            var tmp_x = Math.floor(Math.random() * (canvas.width - coefficient)),
-//                tmp_y = Math.floor(Math.random() * (canvas.height - coefficient));
-//
-//            x = Math.round(tmp_x / coefficient) * coefficient;
-//            y = Math.round(tmp_y / coefficient) * coefficient;
-//        }
-
-//        var paintArea = function (x, y, color) {
-//            context.save();
-//            context.fillStyle = color;
-//            context.fillRect(x - coefficient/2 - 1, y - coefficient/2 - 1, coefficient - 1, coefficient - 1);
-//            context.restore();
-//        }
+            coordinates = battleField.generateInitCoords();
 
         var occupyArea = function (old_x, old_y) {
             do {
-                coords = battleField.generateNewCoords(old_x, old_y);
-            } while (!battleField.addToMap(coords.y, coords.x, id, color));
+                coordinates = battleField.generateNewCoords(old_x, old_y);
+            } while (!battleField.addToMap(coordinates.y, coordinates.x, id, color));
 
-            setTimeout(occupyArea, 0, coords.x, coords.y);
+            setTimeout(occupyArea, 0, coordinates.x, coordinates.y);
         }
 
-        occupyArea(coords.x, coords.y);
+        occupyArea(coordinates.x, coordinates.y);
     }
 
     var field = new BattleField(canvas);
@@ -256,9 +209,12 @@
     field.addArmy('#0099ff');
 
     // TODO: refactor this mess
-    function rating() {
-        var statistics_obj = {}, statistics_array = [], map = field.getMap();
-        // sort ratings by id
+    function drawRatingsChart() {
+        var statistics_obj = {},
+            statistics_array = [],
+            map = field.getMap();
+
+        // counts ratings per color
         for (var y in map) {
             for (var x in map[y]) {
                 if (statistics_obj[map[y][x].getColor()]) {
@@ -268,10 +224,11 @@
                 }
             }
         }
-        // sort colors and ratings
+        // creates an array of rating/color objects
         for (var color in statistics_obj) {
             statistics_array.push({rating: statistics_obj[color], color: color});
         }
+        // sorts by rating
         statistics_array.sort(function (a, b) {
             if (a.rating < b.rating)
                 return 1;
@@ -281,6 +238,7 @@
             return 0;
         });
 
+        // creates html chart
         document.getElementById('rating').innerHTML = '';
         for (var index in statistics_array) {
             var el = document.createElement('DIV'),
@@ -293,6 +251,6 @@
             document.getElementById('rating').appendChild(el);
         }
     }
-    setInterval(rating, 5000);
+    setInterval(drawRatingsChart, 5000);
 
 })();
