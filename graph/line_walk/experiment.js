@@ -12,9 +12,12 @@
 
         var armies_collection = [],
             context = canvas.getContext('2d'),
-            lost_time = 30000, // time when a cell is considered as nobody's
+            lost_time = 60000, // time when a cell is considered as nobody's
             coefficient = 10, // have to be divided on 2
             map = [],
+            leading_time = 120000,
+            leader_start_time = new Date().valueOf(),
+            current_leader_id = null,
             self = this;
 
         var initField = function () {
@@ -27,6 +30,33 @@
 
         this.getMap = function () {
             return map;
+        }
+
+        this.setLeader = function (id) {
+            var current_time = new Date().valueOf(),
+                army = null;
+
+            if (current_leader_id !== id) {
+                current_leader_id = id;
+                leader_start_time = new Date().valueOf();
+            } else {
+                if ((current_time - leader_start_time) >= leading_time) {
+                    army = self.getArmyById(id);
+                    if (army) {
+                        army.addStar();
+                        leader_start_time = new Date().valueOf();
+                    }
+                }
+            }
+        }
+
+        this.getArmyById = function (id) {
+            for (var army_prop in armies_collection) {
+                if (armies_collection[army_prop].getId() == id) {
+                    return armies_collection[army_prop];
+                }
+            }
+            return null;
         }
 
         this.generateNewCoords = function (old_x, old_y) {
@@ -180,8 +210,25 @@
      */
     function Army(color, battleField) {
         var color = color,
+            stars = 0,
             id = Math.floor(Math.random() * 1000000000),
             coordinates = battleField.generateInitCoords();
+
+        this.getId = function () {
+            return id;
+        }
+
+        this.addStar = function () {
+            stars++;
+        }
+
+        this.getStarsCount = function () {
+            return stars;
+        }
+
+        this.getColor = function () {
+            return color;
+        }
 
         var occupyArea = function (old_x, old_y) {
             do {
@@ -217,16 +264,17 @@
         // counts ratings per color
         for (var y in map) {
             for (var x in map[y]) {
-                if (statistics_obj[map[y][x].getColor()]) {
-                    statistics_obj[map[y][x].getColor()]++;
+                if (statistics_obj[map[y][x].getId()]) {
+                    statistics_obj[map[y][x].getId()]++;
                 } else {
-                    statistics_obj[map[y][x].getColor()] = 1;
+                    statistics_obj[map[y][x].getId()] = 1;
                 }
             }
         }
         // creates an array of rating/color objects
-        for (var color in statistics_obj) {
-            statistics_array.push({rating: statistics_obj[color], color: color});
+        for (var id in statistics_obj) {
+            var army = field.getArmyById(id);
+            statistics_array.push({rating: statistics_obj[id], id: id, color: army.getColor(), stars: army.getStarsCount()});
         }
         // sorts by rating
         statistics_array.sort(function (a, b) {
@@ -237,18 +285,37 @@
             // a must be equal to b
             return 0;
         });
-
+        field.setLeader(statistics_array[0].id);
+        function drawStars(count) {
+            var string = '';
+            for (var i = 0; i < count; i++) {
+                string += '*';
+            }
+            return string;
+        }
         // creates html chart
         document.getElementById('rating').innerHTML = '';
         for (var index in statistics_array) {
-            var el = document.createElement('DIV'),
-                position = parseInt(index) + 1;
+            var chart_el = document.createElement('DIV'),
+                data_el = document.createElement('DIV'),
+                wrapper_el = document.createElement('DIV'),
+                position = parseInt(index) + 1,
+                stars_string = drawStars(statistics_array[index].stars);
 
-            el.style.width = (statistics_array[index].rating/20) + 'px';
-            el.style.height = 8 + 'px';
-            el.style.background = statistics_array[index].color,
-                el.innerHTML = '<span>' + position + ' - ' + statistics_array[index].rating + '</span>';
-            document.getElementById('rating').appendChild(el);
+            chart_el.setAttribute('class', 'army');
+            data_el.setAttribute('class', 'data');
+            wrapper_el.setAttribute('class', 'wrapper');
+
+            chart_el.style.width = (statistics_array[index].rating/20) + 'px';
+            chart_el.style.height = 8 + 'px';
+            chart_el.style.background = statistics_array[index].color;
+            data_el.innerHTML = statistics_array[index].rating + '<span> ' + stars_string + '</span>';
+
+            wrapper_el.appendChild(chart_el);
+            wrapper_el.appendChild(data_el);
+
+            document.getElementById('rating').appendChild(wrapper_el);
+
         }
     }
     setInterval(drawRatingsChart, 5000);
