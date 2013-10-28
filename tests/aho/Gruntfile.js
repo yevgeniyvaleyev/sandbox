@@ -72,7 +72,7 @@ module.exports = function (grunt) {
     });
 
     /**
-     * Special task was created due to some groblems with grunt-karma and karma about 'files' field
+     * Special task was created due to some problems with grunt-karma and karma about 'files' field
      */
     grunt.registerMultiTask('karma', 'run karma.', function () {
         var done = this.async(),
