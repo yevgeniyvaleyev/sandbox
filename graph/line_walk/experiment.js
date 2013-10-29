@@ -307,7 +307,6 @@
             wrapper_el.setAttribute('class', 'wrapper');
 
             chart_el.style.width = (statistics_array[index].rating/20) + 'px';
-            chart_el.style.height = 8 + 'px';
             chart_el.style.background = statistics_array[index].color;
             data_el.innerHTML = statistics_array[index].rating + '<span> ' + stars_string + '</span>';
 
