@@ -6,12 +6,12 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('./package.json'),
-        bowerful: {
+        /*bowerful: {
             dist: {
                 store: '/app/components/',
                 packages: '<%= pkg.bower.dependencies %>'
             }
-        },
+        },*/
         regarde: {
             reload: {
                 files: [
@@ -42,11 +42,11 @@ module.exports = function (grunt) {
                 autoWatch: true,
                 files: {
                     src: [
-                        'app/components/jquery/jquery.min.js',
-                        'app/components/unstable-angular-complete/angular.min.js',
-                        'app/components/unstable-angular-complete/angular-resource.min.js',
-                        'app/components/unstable-angular-complete/angular-sanitize.min.js',
-                        'app/components/unstable-angular-complete/angular-mocks.js',
+                        //'app/components/jquery/jquery.min.js',
+                        'app/components/angular-complete/angular.min.js',
+                        'app/components/angular-complete/angular-resource.min.js',
+                        'app/components/angular-complete/angular-sanitize.min.js',
+                        'app/components/angular-complete/angular-mocks.js',
 
 //                        'node_modules/karma/adapter/lib/mocha.js',
 //                        'node_modules/karma/adapter/mocha.js',
@@ -88,7 +88,7 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('grunt-regarde');
-    grunt.loadNpmTasks('grunt-bowerful');
+    //grunt.loadNpmTasks('grunt-bowerful');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-livereload');
     grunt.loadNpmTasks('grunt-contrib-connect');

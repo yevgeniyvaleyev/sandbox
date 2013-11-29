@@ -1,6 +1,12 @@
 {
   "name": "gallery",
   "version": "0.1.0",
+  "bower": {
+    "dependencies": {
+      "unstable-angular-complete": "1.1.5",
+      "jquery": "1.10.2"
+    }
+  },
   "devDependencies": {
     "grunt": "~0.4.2",
     "bower": "*",
@@ -8,13 +14,14 @@
     "grunt-contrib-connect": "0.1.2",
     "grunt-contrib-livereload": "0.1.2",
     "grunt-contrib-jshint": "0.1.1",
+    "grunt-bowerful": "0.3.0",
     "grunt-regarde": "0.1.1",
     "karma": "0.10.2",
     "lodash": "*"
   },
   "scripts": {
-    "start": ".\\node_modules\\.bin\\grunt server",
-    "test": ".\\node_modules\\.bin\\grunt test",
-    "postinstall": ".\\node_modules\\.bin\\bower install"
+    "start": "./node_modules.bin/grunt server",
+    "test": "./node_modules/.bin/grunt test",
+    "postinstall": "./node_modules/.bin/grunt bowerful"
   }
 }
