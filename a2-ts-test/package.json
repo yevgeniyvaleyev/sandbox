@@ -1,0 +1,22 @@
+{
+  "name": "a2-ts-test",
+  "version": "1.0.0",
+  "description": "Angular 2 and Typescript test",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "npm run typings install",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    "lite": "lite-server",
+    "start": "concurrent \"npm run tsc:w\" \"npm run lite\" ",
+    "typings" : "typings"
+  },
+  "author": "Yevgeniy Valeyev <yvaleyev@thunderhead.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^2.0.0",
+    "lite-server": "^2.1.0",
+    "typescript": "^1.7.5",
+    "typings": "^0.6.8"
+  }
+}
