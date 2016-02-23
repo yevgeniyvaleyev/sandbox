@@ -11,7 +11,7 @@
 		"start": "concurrent \"npm run tsc:w\" \"npm run lite\" ",
 		"typings" : "typings"
 	},
-	"author": "Yevgeniy Valeyev <yvaleyev@thunderhead.com>",
+	"author": "Yevgeniy Valeyev",
 	"license": "ISC",
 	"dependencies": {
 		"angular2": "2.0.0-beta.6",
