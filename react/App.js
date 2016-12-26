@@ -126,13 +126,13 @@ class RefTester extends React.Component {
 				<input ref={node => this.a = node} onChange={this.update.bind(this)}/><span>{this.state.a}</span>
 				<input ref="b" onChange={this.update.bind(this)}/><span>{this.state.b}</span>
 
-				// will access components' DOM
+				{/*will access components' DOM*/}
 				<Input1
 					ref={component => this.c = component}
 					update={this.update.bind(this)}/>
 				<span>{this.state.c}</span>
 
-				// will have access to refs of components
+				{/*will have access to refs of components*/}
 				<Input2
 					ref={component => this.d = component}
 					update={this.update.bind(this)}/>
