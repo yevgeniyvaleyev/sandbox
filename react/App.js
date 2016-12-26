@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 class App extends React.Component {
 	constructor () {
@@ -25,6 +26,7 @@ class App extends React.Component {
 					<li>Cat: {cat}</li>
 					<li>State: {this.state.txt}</li>
 					<li>EventTester component: <EventTester /></li>
+					<li>RefTester component: <RefTester /></li>
 				</ul>
 			</div>
 		)
@@ -65,6 +67,7 @@ Heart.propTypes = {
 	}
 };
 
+
 /**
  * This component is designed to show event handling in React
  */
@@ -102,6 +105,54 @@ class EventTester extends React.Component {
 	}
 }
 
+class RefTester extends React.Component {
+	constructor () {
+		super();
+		this.state = {}
+	}
+
+	update () {
+		this.setState({
+			a: this.a.value,
+			b: this.refs.b.value,
+			c: ReactDOM.findDOMNode(this.c).value,
+			d: this.d.refs.input.value
+		});
+	}
+
+	render () {
+		return (
+			<div>
+				<input ref={node => this.a = node} onChange={this.update.bind(this)}/><span>{this.state.a}</span>
+				<input ref="b" onChange={this.update.bind(this)}/><span>{this.state.b}</span>
+
+				// will access components' DOM
+				<Input1
+					ref={component => this.c = component}
+					update={this.update.bind(this)}/>
+				<span>{this.state.c}</span>
+
+				// will have access to refs of components
+				<Input2
+					ref={component => this.d = component}
+					update={this.update.bind(this)}/>
+				<span>{this.state.d}</span>
+			</div>
+		)
+	}
+}
+
+// test input component
+class Input1 extends React.Component {
+	render () {
+		return <input onChange={this.props.update}/>
+	}
+}
+class Input2 extends React.Component {
+	render () {
+		return <div><input ref="input" onChange={this.props.update}/></div>
+	}
+}
 // default properties for app
 App.defaultProps = {
 	txt: 'default txt property',
