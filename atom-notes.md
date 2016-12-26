@@ -9,6 +9,7 @@
 
 ## Other
 - markdown-preview-plus
+- atom-beautify
 
 ## Themes
 - seti
