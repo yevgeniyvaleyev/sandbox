@@ -18,16 +18,33 @@ class App extends React.Component {
 		let cat = this.props.cat;
 		return (
 			<div>
-				<Widget update={this.update.bind(this)}>
-					I <Heart color="orange"/> React
-				</Widget>
-				<ul>
-					<li>Text: {txt}</li>
-					<li>Cat: {cat}</li>
-					<li>State: {this.state.txt}</li>
-					<li>EventTester component: <EventTester /></li>
-					<li>RefTester component: <RefTester /></li>
-				</ul>
+				<div className='row'>
+					<div className='col-sm-6'>
+						<div className='well'>
+							<Widget update={this.update.bind(this)}>
+								I <Heart color="orange"/> React
+							</Widget>
+						</div>
+					</div>
+					<div className='col-sm-6'>
+						<ul className='well'>
+							<li>Text: {txt}</li>
+							<li>Cat: {cat}</li>
+							<li>State: {this.state.txt}</li>
+							<li>EventTester component: <EventTester /></li>
+						</ul>
+					</div>
+				</div>
+				<div className='row'>
+					<div className='col-sm-12'>
+						<div className='panel panel-default'>
+							<div className='panel-heading'>RefTester component:</div>
+							<div className='panel-body'>
+								<RefTester />
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		)
 	}
@@ -69,8 +86,8 @@ Heart.propTypes = {
 
 
 /**
- * This component is designed to show event handling in React
- */
+* This component is designed to show event handling in React
+*/
 class EventTester extends React.Component {
 	constructor () {
 		super();
@@ -86,19 +103,19 @@ class EventTester extends React.Component {
 		return (
 			<div>
 				<textarea
-				  onKeyPress={this.update}
-				  onCopy={this.update}
-				  onCut={this.update}
-				  onPaste={this.update}
-				  onBlur={this.update}
-				  onFocus={this.update}
-				  onDoubleClick={this.update}
-				  onTouchStart={this.update}
-				  onTouchMove={this.update}
-				  onTouchEnd={this.update}
-				  cols="10"
-				  rows="1"
-				></textarea>
+					onKeyPress={this.update}
+					onCopy={this.update}
+					onCut={this.update}
+					onPaste={this.update}
+					onBlur={this.update}
+					onFocus={this.update}
+					onDoubleClick={this.update}
+					onTouchStart={this.update}
+					onTouchMove={this.update}
+					onTouchEnd={this.update}
+					cols="10"
+					rows="1"
+					></textarea>
 				<div> > {this.state.currentEvent}</div>
 			</div>
 		)
@@ -123,20 +140,32 @@ class RefTester extends React.Component {
 	render () {
 		return (
 			<div>
-				<input ref={node => this.a = node} onChange={this.update.bind(this)}/><span>{this.state.a}</span>
-				<input ref="b" onChange={this.update.bind(this)}/><span>{this.state.b}</span>
-
+				<div>
+					<label className='pullLeft'>Assigning 'node' to 'a'</label>
+					<input className='pullLeft' ref={node => this.a = node} onChange={this.update.bind(this)}/>
+					<span> > {this.state.a}</span>
+				</div>
+				<div>
+					<label>Via reference 'b'</label>
+					<input ref="b" onChange={this.update.bind(this)}/>
+					<span> > {this.state.b}</span>
+				</div>
 				{/*will access components' DOM*/}
-				<Input1
-					ref={component => this.c = component}
-					update={this.update.bind(this)}/>
-				<span>{this.state.c}</span>
-
-				{/*will have access to refs of components*/}
-				<Input2
-					ref={component => this.d = component}
-					update={this.update.bind(this)}/>
-				<span>{this.state.d}</span>
+				<div>
+					<label>Assigning 'component' to 'c'</label>
+					<Input1
+						ref={component => this.c = component}
+						update={this.update.bind(this)}/>
+					<span> > {this.state.c}</span>
+				</div>
+				<div>
+					<label>Assigning 'component' to 'd' but accessing via refs in a component</label>
+					{/*will have access to refs of components*/}
+					<Input2
+						ref={component => this.d = component}
+						update={this.update.bind(this)}/>
+					<span> > {this.state.d}</span>
+				</div>
 			</div>
 		)
 	}
@@ -150,7 +179,7 @@ class Input1 extends React.Component {
 }
 class Input2 extends React.Component {
 	render () {
-		return <div><input ref="input" onChange={this.props.update}/></div>
+		return <span><input ref="input" onChange={this.props.update}/></span>
 	}
 }
 // default properties for app
